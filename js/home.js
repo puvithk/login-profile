@@ -57,7 +57,7 @@ const updateUserDeatils = async ()=>{
 
         const tx = db.transaction("users", "readonly");
         const store = tx.objectStore("users");
-        console.log(username)
+       
         user = await new Promise((resolve, reject) => {
             const request = store.get(username);
 
@@ -75,7 +75,7 @@ const updateUserDeatils = async ()=>{
      }catch{
         notification("Able to load Try later"  , STATUS.FAIL)
         setTimeout(()=>{
-            globalThis.location.href = '/'
+            globalThis.location.href = '/html/index.html'
         },  5000)
      }
     // Update the Input values 
@@ -189,7 +189,7 @@ editButton.style.display = 'block'
 const logout  = ()=>{
     
     localStorage.removeItem("currectUser")
-    globalThis.location.href = '/'
+    globalThis.location.href = '/html/index.html'
 }
 
 

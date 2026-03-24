@@ -18,6 +18,7 @@ main{
     align-items: center;
     justify-content: center;
     overflow: hidden;
+   
     
 }
 
@@ -412,9 +413,7 @@ button:disabled , button:disabled:hover{
     }
    
 }
-main{
-    position: absolute;
-}
+
 
 .notification{
 

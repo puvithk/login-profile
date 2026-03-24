@@ -219,7 +219,7 @@ const login = async (event) =>
         notification("Login success : Redirecting" , STATUS.SUCCESS)
         localStorage.setItem("currectUser" , JSON.stringify(user.username))
         setTimeout(() => {
-             globalThis.location.href = '/home.html';
+             globalThis.location.href = '/html/home.html';
     }, 5000);
     }catch{
         notification("Error" , STATUS.FAIL)
