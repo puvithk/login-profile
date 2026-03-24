@@ -35,35 +35,42 @@ const notification = (message, status) => {
         div.remove();
     }, 5000);
 };
-
+const noneValue = 'none'
+const passwordInputType = 'password'
+const textStr = 'text'
+const blockStr = 'block'
+const validColor = 'green';
+const validDecorator = 'line-through'
+const invalidColor = 'red';
+const invalidDecorator =  'none'
 showPasswordLogin.addEventListener('click', () => {
 
-    passwordInput.type = "password"
+    passwordInput.type = passwordInputType
     showPasswordLogin.style.opacity = 0
-    showPasswordLogin.style.display = 'none'
+    showPasswordLogin.style.display = noneValue
     lockPasswordLogin.style.opacity = 1
 })
 
 lockPasswordLogin.addEventListener('click', () => {
    
-    passwordInput.type = "text"
+    passwordInput.type = textStr
     showPasswordLogin.style.opacity = 1
-    showPasswordLogin.style.display = 'block'
+    showPasswordLogin.style.display = blockStr
     lockPasswordLogin.style.opacity = 0
 })
 showPasswordSignUp.addEventListener('click', () => {
  
-    passwordInputSignup.type = "password"
+    passwordInputSignup.type = passwordInputType
     showPasswordSignUp.style.opacity = 0
-    showPasswordSignUp.style.display = 'none'
+    showPasswordSignUp.style.display = noneValue
     lockPasswordSignUp.style.opacity = 1
 })
 
 lockPasswordSignUp.addEventListener('click', () => {
    
-    passwordInputSignup.type = "text"
+    passwordInputSignup.type = textStr
     showPasswordSignUp.style.opacity = 1
-    showPasswordSignUp.style.display = 'block'
+    showPasswordSignUp.style.display = blockStr
     lockPasswordSignUp.style.opacity = 0
 })
 
@@ -81,7 +88,7 @@ const openDB = () => {
         };
 
         request.onsuccess = (e) => resolve(e.target.result);
-        request.onerror = (e) => reject(e);
+        request.onerror = (e) => reject(new Error(e));
     });
 };
 
@@ -151,7 +158,7 @@ const signUp = async (event) => {
             const request = store.get(username);
 
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject("Error fetching user");
+            request.onerror = () => reject(new Error("Error fetching user"));
         });
         if(user){
             console.log("User already present")
@@ -202,7 +209,7 @@ const login = async (event) =>
             const request = store.get(username);
 
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject("Error fetching user");
+            request.onerror = () => reject(new Error("Error fetching user"));
         });
 
         if(!user){
@@ -239,10 +246,10 @@ passwordElement.addEventListener("input", (e) => {
     const passwordMessage = document.getElementById("password-message");
 
     if (checkPassword(password)) {
-        passwordMessage.style.color = 'green';
-        passwordMessage.style.textDecoration = 'line-through'
+        passwordMessage.style.color = validColor;
+        passwordMessage.style.textDecoration = validDecorator
     } else {
-        passwordMessage.style.color = 'red';
-        passwordMessage.style.textDecoration = 'none'
+        passwordMessage.style.color = invalidColor;
+        passwordMessage.style.textDecoration = invalidDecorator;
     }
 });

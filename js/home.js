@@ -44,7 +44,7 @@ const openDB = () => {
         };
 
         request.onsuccess = (e) => resolve(e.target.result);
-        request.onerror = (e) => reject(e);
+        request.onerror = (e) => reject(new Error(e));
     });
 };
 const updateUserDeatils = async ()=>{
@@ -62,7 +62,7 @@ const updateUserDeatils = async ()=>{
             const request = store.get(username);
 
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject("Error fetching user");
+            request.onerror = () => reject(new Error("Error fetching user"));
         });
 
         if(!user){
@@ -83,11 +83,11 @@ const updateUserDeatils = async ()=>{
     profileImage.src =  URL.createObjectURL(user.profileImage);
     console.log(user['profileImage'])
     allElements.forEach((element)=>{
-        if(!user[element.id]){
-            element.value =  'Update the Value'
+        if(user[element.id]){
+          element.value =  user[element.id]  
         }
         else {
-          element.value =  user[element.id]  
+            element.value =  'Update the Value'
         }
         
     })
@@ -96,7 +96,7 @@ const updateUserDeatils = async ()=>{
 updateUserDeatils()
 const onClickEditValues = (element) => {
 
-const xMark = ''
+
 const editButton = document.getElementById(`${element}-edit`)
 const correctButton = document.getElementById(`${element}-correct`)
 const wrongButton = document.getElementById(`${element}-xmark`)
@@ -142,7 +142,7 @@ try {
         const request = store.get(userDetails.username);
 
         request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject("Error fetching user");
+        request.onerror = () => reject(new Error("Error fetching user"));
     });
 
     if (!currentUser) {
@@ -269,7 +269,7 @@ const openUpdatePopUp = () => {
         const user = await new Promise((resolve, reject) => {
             const request = store.get(userDetails.username);
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject();
+            request.onerror = () => reject(new Error("DB error"));
         });
 
         user.profileImage = selectedFile;
@@ -329,13 +329,16 @@ const openPasswordUpdate = () =>{
 
     newPassword.addEventListener('input' , ()=>{
         if(checkPassword(newPassword.value)){
-            passwordMsg.style.color =  'green'
-            passwordMsg.style.textDecoration = 'line-through'
+            const validColor = 'green';
+            passwordMsg.style.color = validColor;
+            const validDecorator = 'line-through'
+            passwordMsg.style.textDecoration = validDecorator
         }
         else {
-            
-                 passwordMsg.style.color =  'red'
-            passwordMsg.style.textDecoration = 'none'
+            const invalidColor = 'red';
+            passwordMsg.style.color = invalidColor;
+            const invalidDecorator =  'none'
+            passwordMsg.style.textDecoration = invalidDecorator
         }
     })
 
@@ -358,11 +361,7 @@ const openPasswordUpdate = () =>{
   
         if(oldPasswordStr == ''){
             notification("Enter the old password" , STATUS.FAIL)
-        }else if(!checkPassword(newPassword.value)){
-            notification("Password must contain Min 8 chars: upper, lower, number, special." , STATUS.FAIL)
-        }
-        
-        else {
+        }else if(checkPassword(newPassword.value)){
             
             if(userDetails.password === oldPasswordStr){
             try {
@@ -377,7 +376,7 @@ const openPasswordUpdate = () =>{
                     const request = store.get(userDetails.username);
 
                     request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject("Error fetching user");
+                    request.onerror = () => reject(new Error("Error fetching user"));
                 });
 
                 if (!currentUser) {
@@ -405,6 +404,10 @@ const openPasswordUpdate = () =>{
             }else {
                 notification("Wrong Password" , STATUS.FAIL)
             }
+        }
+        
+        else {
+            notification("Password must contain Min 8 chars: upper, lower, number, special." , STATUS.FAIL)
         }
 
     })

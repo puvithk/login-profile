@@ -447,9 +447,7 @@ button:disabled , button:disabled:hover{
     left: 0px;
     animation: progress-animation 5s linear 0.2ms 1 ;
 }
-.success{
 
-}
 .fail{
     color: red;
     background: red;
