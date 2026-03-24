@@ -15,6 +15,8 @@ const showPasswordSignUp = document.getElementsByClassName('show-password')[1]
 const lockPasswordSignUp= document.getElementsByClassName('lock-password')[1]
 const passwordInput = document.getElementById('password-login')
 const passwordInputSignup = document.getElementById('password-signup')
+const fileInput = document.getElementById('file-signup')
+
 
 const STATUS = {
     SUCCESS: "success",
@@ -43,6 +45,11 @@ const validColor = 'green';
 const validDecorator = 'line-through'
 const invalidColor = 'red';
 const invalidDecorator =  'none'
+
+
+
+
+
 showPasswordLogin.addEventListener('click', () => {
 
     passwordInput.type = passwordInputType
@@ -74,7 +81,16 @@ lockPasswordSignUp.addEventListener('click', () => {
     lockPasswordSignUp.style.opacity = 0
 })
 
-
+// check the file type 
+fileInput.addEventListener('change' , ()=>{
+    const allowedTypes = ['image/jpeg', 'image/png']
+    if (!allowedTypes.includes(fileInput.files[0].type)) {
+           notification('Only PNG and JPEG file are allowed' , STATUS.FAIL)
+           fileInput.value = ''
+         
+    }
+})
+// Function to connect to database 
 const openDB = () => {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open("UserDB", 1);
@@ -92,13 +108,13 @@ const openDB = () => {
     });
 };
 
-
+//Sign up movement 
 
 const openSignUp = ()=>{
   
 
-    loginContainer.classList.add("change-login-container")
-    signupContainer.classList.add('change-signup-container')
+    loginContainer.classList.add("change-login-container") // Changes position
+    signupContainer.classList.add('change-signup-container') // Changes position
     loginForm.classList.add('hide')
     signupForm.classList.remove('hide')
     textSignUp.classList.remove('hide')
@@ -108,8 +124,8 @@ const openSignUp = ()=>{
 }
 const openLogin = ()=>{
 
-    loginContainer.classList.remove("change-login-container")
-    signupContainer.classList.remove('change-signup-container')
+    loginContainer.classList.remove("change-login-container")// Changes position
+    signupContainer.classList.remove('change-signup-container')// Changes position
      loginForm.classList.remove('hide')
     signupForm.classList.add('hide')
     textSignUp.classList.add('hide')
@@ -117,7 +133,7 @@ const openLogin = ()=>{
     forgotPassword.classList.remove('hide')
     text.innerText = 'WELCOME BACK !'
 }
-
+// Sign up function
 const signUp = async (event) => {
     event.preventDefault(); 
 
@@ -127,23 +143,38 @@ const signUp = async (event) => {
     const name = event.target.name.value.trim();
     const file = event.target['profile-image'].files[0]
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+    const allowedTypes = ['image/jpeg', 'image/png']
     if (
         username === '' ||
         password === '' ||
         email === '' ||
-        name === '' ||
-        !emailRegex.test(email)
+        name === ''
+        
     ) {
-        console.log("Invalid input");
+        notification("Invalid input" ,  STATUS.FAIL);
         
         return false;
     }
-
+    if(!emailRegex.test(email)){
+        notification("Enter a valid Mail Id" , STATUS.FAIL)
+        return false 
+    }
+    if(!checkPassword(password)){
+         notification("Password must contain Min 8 chars: upper, lower, number, special." , STATUS.FAIL)
+         return false
+    }
+    if (!allowedTypes.includes(file.type)) {
+           notification('Only PNG and JPEG file are allowed' , STATUS.FAIL)
+           file.value = ''
+           return
+        } 
+    
      try {
+        // Get the database 
         const db = await openDB();
-
+        // Which database to use and which operation can be performed 
         const tx = db.transaction("users", "readwrite");
+        // Get the database data 
         const store = tx.objectStore("users");
 
       
@@ -180,7 +211,7 @@ const signUp = async (event) => {
         notification("Please try Again Later" , STATUS.FAIL)
     }
     
-    notification("SignUp Successfull" , STATUS.SUCCESS)
+    notification("SignUp Successfull : Redirecting" , STATUS.SUCCESS)
     setTimeout(()=>{
         globalThis.location.reload()
     }, 5000)
@@ -235,6 +266,7 @@ const login = async (event) =>
 
 
 const checkPassword = (password) => {
+    // password regex 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     return passwordRegex.test(password);
 };

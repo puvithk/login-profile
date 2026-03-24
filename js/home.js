@@ -95,19 +95,18 @@ const updateUserDeatils = async ()=>{
 }
 updateUserDeatils()
 const onClickEditValues = (element) => {
-
-
-const editButton = document.getElementById(`${element}-edit`)
-const correctButton = document.getElementById(`${element}-correct`)
-const wrongButton = document.getElementById(`${element}-xmark`)
-const input = document.getElementById(element)
-if(element=='phone'){
-    input.value = ''
-}
-editButton.style.display = 'none'
-correctButton.style.display = 'block' 
-wrongButton.style.display = 'block'
-input.disabled =  false
+    // The Id of button are in elementName-operation example password-edit
+    const editButton = document.getElementById(`${element}-edit`)
+    const correctButton = document.getElementById(`${element}-correct`)
+    const wrongButton = document.getElementById(`${element}-xmark`)
+    const input = document.getElementById(element)
+    if(element=='phone'){
+        input.value = ''
+    }
+    editButton.style.display = 'none'
+    correctButton.style.display = 'block' 
+    wrongButton.style.display = 'block'
+    input.disabled =  false
 
 }
 // This fucntion is used to Cancel the Made changes 
@@ -194,9 +193,10 @@ const logout  = ()=>{
 
 
 const allSvgElement = document.querySelectorAll('.edit-button')
+// For all elements adding the listener 
 allSvgElement.forEach(element => {
     let id = element.id 
-    console.log(typeof(id))
+   
     let currectElement =  id.split('-')
     if(currectElement[1] == 'edit'){
         element.addEventListener('click' , ()=>{
@@ -244,10 +244,15 @@ const openUpdatePopUp = () => {
     const closeButton = div.querySelector('.close-popup');
     const confirmButton = div.querySelector('.confirm')
     let selectedFile = null;
+    const allowedTypes = ['image/jpeg', 'image/png']
     fileInput.addEventListener('change', () => {
         const file = fileInput.files[0];
         if (!file) return;
-
+        if (!allowedTypes.includes(file.type)) {
+           notification('Only PNG and JPEG file are allowed' , STATUS.FAIL)
+           fileInput.value = ''
+           return
+        }
         const url = URL.createObjectURL(file);
         selectedFile = file
         imageContainer.innerHTML = `<img src="${url}" alt="preview">`;
