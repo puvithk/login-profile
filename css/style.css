@@ -9,7 +9,7 @@ body{
 }
 main{
       background: 
-        linear-gradient(to right, rgba(0, 0, 0, 0.33), rgba(0, 0, 0, 0.733)),
+        linear-gradient(to right, rgba(255, 255, 255, 0.377), rgba(0, 0, 0, 0.842)),
         url("/assests/imgs/background cloud.png ");
     position: relative;
       width: 100%;
@@ -515,7 +515,7 @@ button:disabled , button:disabled:hover{
     color: white;
     border: white 1px solid;
     border-radius: 5px;
-    
+    margin-bottom: 5px;
     font-family: var(--font-family);
     transition: all 0.3s ease-in;
 }

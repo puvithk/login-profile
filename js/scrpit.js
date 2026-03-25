@@ -17,7 +17,7 @@ const passwordInput = document.getElementById('password-login')
 const passwordInputSignup = document.getElementById('password-signup')
 const fileInput = document.getElementById('file-signup')
 
-
+const usernameInput = document.getElementById("username-signup")
 const STATUS = {
     SUCCESS: "success",
     FAIL: "fail"
@@ -108,6 +108,42 @@ const openDB = () => {
     });
 };
 
+
+//Check username 
+const checkUsername = async (username)=>{
+    try {
+        const db = await openDB()
+    
+        const tx = db.transaction('users' ,  'readonly')
+        const store = tx.objectStore('users')
+
+        const user = await new Promise((resolve , reject) =>{
+            const request = store.get(username)
+            request.onsuccess = () => resolve(request.result)
+            request.onerror=()=> reject(new Error("Fetch Error"))
+        })
+        if(user){
+            return true
+        }
+    }catch{
+        console.log("Error")
+    }
+    return false
+}
+
+
+usernameInput.addEventListener('change',  async (e)=>{
+    if(await checkUsername(e.target.value)){
+        notification("Username already taken" , STATUS.FAIL)
+       
+        
+    }
+    if(e.target.value.includes(" ")){
+         notification("Username cannot contain space" , STATUS.FAIL)
+    }
+})
+
+
 //Sign up movement 
 
 const openSignUp = ()=>{
@@ -155,6 +191,11 @@ const signUp = async (event) => {
         
         return false;
     }
+    if (username.includes(' ')) {
+    notification("Username can't have space", STATUS.FAIL);
+    return false;
+    }
+
     if(!emailRegex.test(email)){
         notification("Enter a valid Mail Id" , STATUS.FAIL)
         return false 
@@ -172,10 +213,8 @@ const signUp = async (event) => {
      try {
         // Get the database 
         const db = await openDB();
-        // Which database to use and which operation can be performed 
-        const tx = db.transaction("users", "readwrite");
-        // Get the database data 
-        const store = tx.objectStore("users");
+       
+        
 
       
         const userData = {
@@ -185,17 +224,16 @@ const signUp = async (event) => {
             name,
             profileImage: file  
         };
-        const user = await new Promise((resolve, reject) => {
-            const request = store.get(username);
-
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(new Error("Error fetching user"));
-        });
-        if(user){
+        
+        if(await checkUsername(username)){
             console.log("User already present")
             notification("Username Already used" , STATUS.FAIL)
             return false
         }
+         // Which database to use and which operation can be performed 
+        const tx = db.transaction("users", "readwrite");
+        // Get the database data 
+        const store = tx.objectStore("users");
         store.put(userData);
 
         tx.oncomplete = () => {
@@ -209,6 +247,7 @@ const signUp = async (event) => {
     } catch (err) {
         console.log("DB error:", err);
         notification("Please try Again Later" , STATUS.FAIL)
+        return
     }
     
     notification("SignUp Successfull : Redirecting" , STATUS.SUCCESS)
