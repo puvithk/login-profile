@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/todo-list.css" >
+   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="create-task" id="create-task">
+            <div class="overlay"></div>
+            <div class="create-popup">
+                <header>
+                    <h3>Add new Task</h3>
+                    <div class="close-button" id="close-button"><i class="fa-solid fa-xmark"></i></div>
+                </header>
+                <div class="create-task-form">
+                    <div class="time-filter">
+                        <div class="today-filter active" id="today-catogory">
+                                               <i class="fa-solid fa-calendar-day">
+                                                    </i><p>TODAY</p></div>
+                        <div class="week-filter" id="week-catogory"><i class="fa-solid fa-calendar-week"></i><p>THIS WEEK</p></div>
+                        <div class="month-filter" id="month-catogory"><i class="fa-regular fa-calendar"></i><p>THIS MONTH</p></div>
+                    </div>
+                    <form>
+                        <div class="task-inputs">
+                            <label for="task-title">Title <span>*</span></label>
+                            <input type="text" placeholder="Enter the title of the Task " id="title" name="title">
+                        </div>
+                         <div class="task-inputs">
+                            <label for="task-description">Description <span>*</span></label>
+                            <textarea  rows="4" cols="50" placeholder="Describe the Task" id="description" , name="description"></textarea>
+                        </div>
+                        <div class="task-row">
+                            <div class="task-inputs">
+                                <label for="task-priority">Priority</label>
+                                <select id="priority"  name="priority">
+                                    <option><span class="indicator high"></span>HIGH</option>
+                                    <option > <span  class="indicator medium"></span>MEDIUM</option>
+                                    <option> <span  class="indicator low"></span>LOW</option>
+                                </select>
+                                
+                            </div>
+                                <div class="task-inputs">
+                                <label for="task-due-date">Due Date</label>
+                                <input type="date" id="due-date"  name="due-date">
+                                
+                            </div>
+                                <div class="task-inputs">
+                                <label for="task-time">Time</label>
+                                <input type="time" id="time" name="time">
+                                
+                            </div>
+                        </div>
+                    </form>
+                    <div class="create-buttons">
+                        <div>
+                            <button class="reset-button btn btn-negative" id="reset-button"><i class="fa-solid fa-arrow-rotate-left"></i>Reset</button>
+                            <button class="reset-button btn btn-negative" disabled><i class="fa-solid fa-pen"></i>Edit</button>
+                        </div>
+                        
+                        <button class="create-button btn"  id="popup-submit"><i class="fa-solid fa-plus"></i>Add Task</button>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+
+
+        <nav>
+            <div>ICON</div>
+            <div class="user-logout">
+                <div class="user-profile"><i class="fa-solid fa-user "></i></div>
+                <button id="logout" class="logout " onclick="logout()" >Logout</button>
+            </div>
+        </nav>
+        <div class="info-section">
+
+            <div class="graphs">
+                <div class="graph">
+                    <h3>Today’s Progress</h3>
+                    <div class="donut" id="today-progress"><p class="percentage-donut">85&percnt;</p></div>
+                    <div class="text-donut">
+                        <div class="completed"><p>2</p><p>Completed</p></div>
+                        <div class="pending"><p>2</p><p>Pending</p></div>
+                    </div>
+                
+                </div>
+                <div class="graph">
+                    <h3>This Week’s Progress</h3>
+                    <div class="donut" id="week-progress"></div>
+                </div>
+                <div class="graph">
+                   <h3>This Month’s Progress</h3>
+                    <div class="donut" id="month-progress"></div>
+                </div>
+
+
+            </div>
+
+        
+
+
+        <div class="calendar">
+            <header class="calendar-header">
+                <div id="prev" class="btn"><i class="fa-solid fa-arrow-left"></i></div>
+                <div id="current" class="current">JULY 2024</div>
+                <div id="next" class="btn"><i class="fa-solid fa-arrow-right"></i></div>
+            </header>
+            <div class="dates">
+                <div class="weeks">
+                    <div>S</div>
+                    <div>M</div>
+                    <div>T</div>
+                    <div>W</div>
+                    <div>TH</div>
+                    <div>F</div>
+                    <div>S</div>
+                
+                </div>
+                <div class="day" id="day">
+                    
+                </div>
+            </div>
+
+        </div>
+        </div>
+
+
+        <div class="todo-section">
+
+            
+
+
+
+
+
+            <header class="todo-header">
+                <div>
+                <i class="fa-solid fa-table-list"></i>
+                <h2>To Do List</h2>
+                </div>
+                <div>
+                    <button class="btn" onclick="openAddTaskPopUp()">+ Add Task</button>
+                </div>
+            </header>
+            <div class="todo-main">
+
+
+
+
+                <div class="todo-today todolist">
+                    <header>
+                        <div class="today-details">
+                            <div class="todo-icon"><i class="fa-solid fa-calendar-day"></i></div>
+                            <h3>Today</h3>
+                            <div class="todo-header-date"><p id="current-day"></p></div>
+                        </div>
+                        <div class="task-progress">
+                            <div class="task-progress-complete"></div>
+                        </div>
+                    </header>
+                    
+                    
+                    <div class="todo-all-list" id="todo-list-today">
+                      
+                     
+                     
+
+                   
+                    
+                       
+
+                        
+                    </div>
+                </div>
+                <div class="todo-week todolist"> 
+                    <header>
+                        <div class="today-details">
+                            <div class="todo-icon"><i class="fa-solid fa-calendar-week"></i></i></div>
+                            <h3>This week</h3>
+                            <div class="todo-header-date"><p id="current-week"></p></div>
+                        </div>
+                        <div class="task-progress"><div class="task-progress-complete"></div></div>
+                    </header>
+                      <div class="todo-all-list" id="todo-list-week">
+                        <p>No task Found</p>
+                      
+                    
+                    <div class="add-task">
+                            <button class="today-add-task btn">
+                                + Add Task
+                            </button>
+                        </div>
+                    </div>
+                      
+
+                </div>
+                <div class="todo-month todolist ">
+                    <header>
+                        <div class="today-details">
+                            <div class="todo-icon"><i class="fa-regular fa-calendar"></i></div>
+                            <h3>This month</h3>
+                            <div class="todo-header-date"><p id="current-month"></p></div>
+                        </div>
+                        <div class="task-progress"><div class="task-progress-complete"></div></div>
+                    </header>
+
+                     <div class="todo-all-list" id="todo-list-month">
+                        <p>No task Found</p>
+                      
+                    
+                    <div class="add-task">
+                            <button onclick="openAddTaskPopUp()" class="today-add-task btn">
+                                + Add Task
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+<script src="/js/todo-list.js"></script>
+</html>

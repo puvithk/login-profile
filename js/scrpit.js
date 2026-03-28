@@ -191,19 +191,22 @@ const signUp = async (event) => {
         
         return false;
     }
+    // Check space in username
     if (username.includes(' ')) {
     notification("Username can't have space", STATUS.FAIL);
     return false;
     }
-
+    // Check email formate 
     if(!emailRegex.test(email)){
         notification("Enter a valid Mail Id" , STATUS.FAIL)
         return false 
     }
+    // Check the password 
     if(!checkPassword(password)){
          notification("Password must contain Min 8 chars: upper, lower, number, special." , STATUS.FAIL)
          return false
     }
+    // Check weather the file is png or jpeg
     if (!allowedTypes.includes(file.type)) {
            notification('Only PNG and JPEG file are allowed' , STATUS.FAIL)
            file.value = ''

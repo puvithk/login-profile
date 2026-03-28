@@ -135,7 +135,6 @@ try {
     const tx = db.transaction("users", "readwrite");
     const store = tx.objectStore("users");
 
-    console.log(userDetails.username);
 
     const currentUser = await new Promise((resolve, reject) => {
         const request = store.get(userDetails.username);
@@ -171,13 +170,12 @@ try {
     tx.oncomplete = () => {
         console.log("User updated successfully");
     };
-
-} catch(e) {
-    console.log("Erro r " + e);
-    return 
-}
-notification("Updated Successfully" , STATUS.SUCCESS)    
-editButton.style.display = 'block'
+    } catch(e) {
+        console.log("Erro r " + e);
+        return 
+    }
+    notification("Updated Successfully" , STATUS.SUCCESS)    
+    editButton.style.display = 'block'
     correctButton.style.display = 'none' 
     wrongButton.style.display = 'none'
     input.disabled = true
