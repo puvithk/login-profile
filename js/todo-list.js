@@ -11,7 +11,7 @@ const renderCalender = (date)=>{
     let previousMonthDays =  new Date(date.getFullYear() , date.getMonth() , 0).getDate()
     currectYear.innerText = months[date.getMonth()] + ' ' + date.getFullYear()
     for(let i = startDay ; i>0 ; i--){
-         console.log(i)
+    
         const div = document.createElement('div')
         
         div.textContent = previousMonthDays - i + 1
@@ -20,8 +20,11 @@ const renderCalender = (date)=>{
     }
 
     for(let i =1 ;i<=endDay ; i++){
-        console.log(i)
+       
         const div = document.createElement('div')
+        div.addEventListener('click' ,()=>{
+            changeDateUpdate(i)
+        })
         div.textContent =  i 
         if (i === today.getDate() &&date.getMonth() === today.getMonth() &&date.getFullYear() === today.getFullYear())  {
         div.classList.add('current')
@@ -54,10 +57,45 @@ const monthTaskContainer = document.getElementById('todo-list-month');
 const todaysProgress = document.getElementById('today-progress')
 const weeksProgress = document.getElementById('week-progress')
 const monthProgress = document.getElementById('month-progress')
-let category = 'today'
+const todayPercentage = document.getElementById('todays-precentage')
+const todayCompleted = document.getElementById('today-completed')
+const todayPending = document.getElementById('today-pending')
+const weekPercentage = document.getElementById('week-precentage')
+const weekCompleted = document.getElementById('week-completed')
+const weekPending = document.getElementById('week-pending')
+const monthPercentage = document.getElementById('month-precentage')
+const monthCompleted = document.getElementById('month-completed')
+const monthPending = document.getElementById('month-pending')
+const taskHeaderProgressMonth = document.getElementById('task-progress-month')
+const taskHeaderProgressDay = document.getElementById('task-progress-today')
+
+const taskHeaderProgressWeek = document.getElementById('task-progress-week')
+const taskCards = document.querySelectorAll('.todo-card')
+const editBtn = document.getElementById('edit-button')
+let editable = true;
 let today = new Date()
 
-renderCalender(new Date())
+
+
+
+const changeDateUpdate  = async (date) =>{
+    console.log(date)
+    console.log('came here ')
+    today = new Date(today.getFullYear() , today.getMonth() , date)
+    renderCalender(today)
+    await refreshAll()
+
+}
+
+let todayTask = []
+let weekTask =[]
+let monthTask = [] 
+let category = 'today'
+
+
+renderCalender(today)
+
+
 const getFullweekStartAndEnd = (date) => {
     const start = date.getDate() - date.getDay();
     let end = start + 6;
@@ -96,9 +134,7 @@ const UpdateCurrentWeek = (today) =>{
     console.log(weekDeatils)
     currentWeekCard.innerText = weekDeatils.startDate.getDate() + ` ${months[weekDeatils.startDate.getMonth()].substring(0,3)} - ` + weekDeatils.endDate.getDate() + ` ${months[weekDeatils.endDate.getMonth()].substring(0,3)}  `
 }
-UpdateCurrentWeek(today)
-UpdateCurrectMonth(today)
-UpdateCurrentDay(today)
+
 const notification = (message, status) => {
     const div = document.createElement("div");
     div.className = "notification";
@@ -166,9 +202,9 @@ const openTaskDB = () => {
     });
 };
 
-function createTask({ title, description, priority, date, time, category, createdBy , started = false }) {
-    return {
-        id: crypto.randomUUID(),
+function createTask({id=crypto.randomUUID(), title, description, priority, date, time, category, createdBy , started = false }) {
+     return {
+        id: id,
 
         content: {
             title: title.trim(),
@@ -220,9 +256,43 @@ document.addEventListener('change', async (e) => {
         UpdateTodaysTodo();
         UpdateWeekTodo();
         UpdateMonthTodo();
+        UpdateProgress()
     }
+ 
 });
+// Delete the task 
+document.addEventListener('click' , async (e)=>{
+    if(e.target.closest('.delete')){
+        const taskId = e.target.closest('.todo-card').id
+        console.log(taskId)
+        await deleteTaskByTaskId(taskId)
+        todayTask = [];
+        weekTask = [];
+        monthTask = [];
 
+        
+        await getAllTaskAndDivide();
+
+        
+        UpdateTodaysTodo();
+        UpdateWeekTodo();
+        UpdateMonthTodo();
+        UpdateProgress()
+    
+    
+    }
+    });
+
+
+// Add event Listerner to open the task editing 
+document.addEventListener('click', (e) => {
+    if (e.target.closest('input')) return;
+    const card = e.target.closest('.todo-card');
+    if(card){
+        openEditTaskPopUp(card.id)
+    }
+
+});
 const addTaskDatabase =async (taskData) =>{
     try {
     const db = await openTaskDB()
@@ -232,7 +302,7 @@ const addTaskDatabase =async (taskData) =>{
     store.put(taskData)
     tx.oncomplete = () => {
             console.log("Task saved in IndexedDB");
-            notification("Task Added " , STATUS.SUCCESS)
+            
             return true
         };
 
@@ -267,6 +337,27 @@ const getTaskDatabase = async () => {
     }
 };
 
+// Deleteing the task based on the taskId
+
+const deleteTaskByTaskId = async (taskId)=>{
+    try {
+        const db = await openTaskDB()
+        const tx = db.transaction('tasks' , 'readwrite')
+        const store = tx.objectStore('tasks')
+
+
+        await new Promise((resolve , reject) =>{
+            const request = store.delete(taskId);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(new Error("Error fetching Task"));
+        })
+        notification("Deleted Successfully")
+
+    }catch(e){
+        notification('Internal Error' , STATUS.FAIL)
+        console.log(e)
+    }
+}
 
 
 // Updating the Status 
@@ -309,19 +400,59 @@ const UpdateStatusDB = async({id , status})=>{
     }
 
 }
+
+
+
+const getTaskById = async(taskId)=>{
+    try {
+        const db = await openTaskDB();
+        const tx = db.transaction('tasks', 'readonly');
+        const store = tx.objectStore('tasks');
+
+        const tasks = await new Promise((resolve, reject) => {
+            const request = store.get(taskId);
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject("Fetch Error");
+        });
+
+        return tasks;
+    } catch (error) {
+        console.error('Error:', error);
+        return [];
+    }
+}
 async function loadTasks() {
     const tasks = 
     console.log("Tasks:", tasks);  
 }
 
-let todayTask = []
-let weekTask =[]
-let monthTask = [] 
+
 
 
 const getAllTaskAndDivide = async()=>{
+    let weekDeatils = getFullweekStartAndEnd(today)
+    todayTask = [];
+    weekTask = [];
+    monthTask = [];
     const allTask = await getTaskDatabase();
-    allTask.forEach((element) =>{
+    const localDate = today.getFullYear() + '-' + 
+                  String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                  String(today.getDate()).padStart(2, '0');
+    const filteredTask = allTask.filter((element)=>{
+        const taskDate = new Date(element.schedule.date);
+        if(element.schedule.type === CATAGORY.TODAY){
+            return taskDate.toDateString() === today.toDateString();
+        }
+        if(element.schedule.type === CATAGORY.WEEK){
+            return taskDate >= weekDeatils.startDate && taskDate < new Date(weekDeatils.endDate.getTime() + 24 * 60 * 60 * 1000)
+        }
+        if(element.schedule.type === CATAGORY.MONTH){
+            return taskDate.getFullYear() === today.getFullYear() && taskDate.getMonth() === today.getMonth()
+        }
+        return false
+    })
+    filteredTask.forEach((element) =>{
         if(element.schedule.type === CATAGORY.TODAY){
             todayTask.push(element)
         }else if(element.schedule.type === CATAGORY.WEEK){
@@ -350,11 +481,13 @@ const findAllPercentage = ()=>{
             completedWeekCount++;
         }
     })
-    console.log(todayTask.length)
+    console.log("Todays ")
+    console.log(todayTask)
+    console.log(todayTask.length  )
     return {
-        dayPercentage : completedDayCount / todayTask.length *100 , 
-        weekPercentage : completedWeekCount /  weekTask.length *100,
-        monthPercentage :completedMonthCount / monthTask.length *100 ,
+        dayPercentage : Number.isNaN(( completedDayCount / todayTask.length).toFixed(1) *100 ) ? 0 :( completedDayCount / todayTask.length).toFixed(1) *100  , 
+        weekPercentage : Number.isNaN((completedWeekCount /  weekTask.length ).toFixed(1)*100 ) ?0 :(completedWeekCount /  weekTask.length ).toFixed(1)*100 ,
+        monthPercentage :Number.isNaN((completedMonthCount / monthTask.length).toFixed(1) *100 ) ? 0 :((completedMonthCount / monthTask.length).toFixed(1) *100 ) ,
         dayCount : completedDayCount ,
         dayRemaining : todayTask.length - completedDayCount , 
         weekCount : completedWeekCount ,
@@ -388,6 +521,7 @@ const todoCard = ({ id, title, time, priority , status  }) => {
                 <p>${priority.toUpperCase()}</p>
             </div>
         </div>
+        <div class="delete"><i class="fa-solid fa-trash-can"></i></div>
     `;
 
     return div; 
@@ -463,9 +597,10 @@ const UpdateMonthTodo = () => {
             })
         );
     });
-    if(weekTask.length === 0){
+    if(monthTask.length === 0){
         const p = document.createElement('p')
         p.innerText = 'No task Found'
+        
         monthTaskContainer.append(p)
     }
     monthTaskContainer.append(addTaskButton())
@@ -480,15 +615,76 @@ const UpdateMonthTodo = () => {
 const taskPopUpElement  =  document.getElementById('create-task')
 const openAddTaskPopUp = (category = 'today')=>{
     
-    
     taskPopUpElement.style.display = 'flex' 
     document.body.classList.add('no-scroll');
     
 }
+let currentTaskId =  ''
+const refreshTaskEdit = async (taskId)=>{
+    const task = await getTaskById(taskId)
+    const cards =  document.getElementById(taskId)
+    formData.forEach((element)=>{
+        element.disabled = true
+    })
+    const catElement = document.getElementById(`${task.schedule.type}-catogory`)
+    catElement.classList.add('active')
+    
+    const icon = catElement.querySelector('i');
+    if (icon) {
+        icon.className = 'fa-regular fa-circle-check'; 
+        }
+        cat.forEach((elementId) => {
+    const element = document.getElementById(`${elementId}-catogory`)
+            element.classList.add('disable')
+});
+    console.log(task)
+    editBtn.disabled = false
+    taskTitle.value =  task.content.title
+    taskDescription.value = task.content.description
+    taskPriority.value = task.priority.level
+    taskDueDate.value =  task.schedule.date
+    taskTime.value = task.schedule.time
+    
+    taskCreationBtn.innerText =  'Confirm'
+}
+const openEditTaskPopUp = async(taskId)=>{
+    localStorage.setItem('taskId' , JSON.stringify(taskId))
+    await refreshTaskEdit(taskId)
+
+    taskPopUpElement.style.display = 'flex' 
+    document.body.classList.add('no-scroll');
+    
+}
+editBtn.addEventListener('click' ,async ()=>{
+    if(editable){
+        formData.forEach((element)=>{
+        element.disabled = false } )
+        editable = false
+        editBtn.innerText = 'Cancel'
+        cat.forEach((elementId) => {
+        const element = document.getElementById(`${elementId}-catogory`)
+        element.classList.remove('disable')
+            
+    
+    })
+    }else {
+        const i = document.createElement('i')
+        i.classList.add('fa-solid' , 'fa-pen');
+        editBtn.innerText = ''
+        editBtn.append(i)
+        editBtn.append('Edit')
+        const taskid = JSON.parse(localStorage.getItem('taskId' ))
+        await refreshTaskEdit(taskid)
+        editable = true
+}
+    }
+    
+)
 const closeButton = document.getElementById('close-button')
 closeButton.addEventListener("click" ,  ()=>{
     taskPopUpElement.style.display = 'none'
     document.body.classList.remove('no-scroll');
+    refreshAll()
 })
 const isFormValid = () => {
     for (let element of formData) {
@@ -510,13 +706,48 @@ taskCreationBtn.addEventListener('click', async ()=>{
         // globalThis.location.href = '/html/index.html'
     }
     if(!isFormValid()) return
-
+    const taskId = JSON.parse(localStorage.getItem('taskId'))
+    if(taskId){
+        console.log(taskId)
+        const task = createTask({id:taskId, title: taskTitle.value, description: taskDescription.value.trim(), priority:taskPriority.value.trim(), date: taskDueDate.value, time: taskTime.value, category: category, createdBy: username, started: true })
+        await addTaskDatabase(task)
+        notification("Task Updated " , STATUS.SUCCESS)
+        formData.forEach((element)=>{
+        element.disabled = false})
+        closeButton.click()
+    editBtn.disabled = false
+    taskTitle.value =  ''
+    taskDescription.value =''
+    taskPriority.value = 'HIGH'
+    taskDueDate.value =  ''
+    taskTime.value =''
+    cat.forEach((elementId) => {
+        const element = document.getElementById(`${elementId}-catogory`)
+        element.classList.remove('disable')
+            
+    
+    })
+        return
+    }
     // get the category 
 
     // get all the values 
     // // create a task object
     const task = createTask({ title: taskTitle.value, description: taskDescription.value.trim(), priority:taskPriority.value.trim(), date: taskDueDate.value, time: taskTime.value, category: category, createdBy: username, started: true })
+    console.log(taskDueDate.value)
     const taskStatus = await addTaskDatabase(task)
+    notification("Task Added " , STATUS.SUCCESS)
+    // refreash all inputs 
+    formData.forEach((element)=>{
+        element.disabled = false
+    })
+    closeButton.click()
+    editBtn.disabled = false
+    taskTitle.value =  ''
+    taskDescription.value =''
+    taskPriority.value = 'HIGH'
+    taskDueDate.value =  ''
+    taskTime.value =''
     
 
     // update in the database 
@@ -569,26 +800,44 @@ cat.forEach((elementId) => {
 
 
 
-(async () => {
-    await getAllTaskAndDivide();
 
-    console.log("Todays", todayTask);
-    
-    console.log(findAllPercentage())
-    UpdateTodaysTodo(); 
-    UpdateWeekTodo();
-    UpdateMonthTodo();
-})();
 const conicGradient = (startG , endG , startR , endR)=>{
     return `conic-gradient(#22c55e 0% ${endG}%, #ef4444 ${endG}% 100%)`
 }
 
-const UpdateProgress = async()=>{
-    await getAllTaskAndDivide();
+const UpdateProgress = ()=>{
+    
     const precentages = findAllPercentage()
+    console.log(precentages)
     todaysProgress.style.background =  conicGradient(0 ,precentages.dayPercentage , precentages.dayPercentage , 100 )
     
     weeksProgress.style.background =  conicGradient(0 , precentages.weekPercentage , precentages.weekPercentage , 100)
     monthProgress.style.background  = conicGradient(0, precentages.monthPercentage , precentages.monthPercentage , 100)
+    todayPercentage.innerHTML =  precentages.dayPercentage + '&percnt;';
+    todayCompleted.innerText = precentages.dayCount 
+    todayPending.innerText = precentages.dayRemaining
+    weeksProgress.style.background =  conicGradient(0 , precentages.weekPercentage , precentages.weekPercentage , 100)
+    monthProgress.style.background  = conicGradient(0, precentages.monthPercentage , precentages.monthPercentage , 100)
+    weekPercentage.innerHTML = precentages.weekPercentage + '&percnt;';
+    weekCompleted.innerText = precentages.weekCount
+    weekPending.innerText = precentages.WeekRemaining
+    monthPercentage.innerHTML = precentages.monthPercentage + '&percnt;';
+    monthCompleted.innerText = precentages.monthCount
+    monthPending.innerText = precentages.monthRemaining
+    taskHeaderProgressDay.style.width = `${precentages.dayPercentage}%`
+    taskHeaderProgressMonth.style.width = `${precentages.monthPercentage}%`
+    taskHeaderProgressWeek.style.width = `${precentages.weekPercentage}%`
 }
-UpdateProgress()
+
+
+const refreshAll= async () =>{
+    await getAllTaskAndDivide();
+    UpdateTodaysTodo();
+    UpdateWeekTodo();
+    UpdateMonthTodo();
+    UpdateProgress()
+}
+refreshAll()
+UpdateCurrentWeek(today)
+UpdateCurrectMonth(today)
+UpdateCurrentDay(today)
