@@ -1,5 +1,11 @@
 :root{
     --font-family : "Space Grotesk", sans-serif;
+    --today-info-color : linear-gradient(135deg, #000, #444);
+    --color-bg-main: #F8FAFC;
+    --color-white: #ffffff;
+    --color-black: #000000;
+    
+  
 }
 
 body{
@@ -7,10 +13,12 @@ body{
     padding: 0;
     font-family: var(--font-family);
 }
+button{
+    font-family: var(--font-family);
+}
 main{
-      background: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.377), rgba(0, 0, 0, 0.842)),
-        url("/assests/imgs/background cloud.png ");
+     background: var(--color-bg-main);
+
     position: relative;
       width: 100%;
     min-height: 100vh;
@@ -21,15 +29,93 @@ main{
    
     
 }
+nav{
+    height: 64px;
+    background-image: var(--today-info-color) ;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--color-white);
+    position: fixed;
+    top: 0px;
+    z-index: 11;
+    
 
+}
+.logo{
+    width: 260px;
+
+}
+.user-image{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+.logout{
+
+    margin-right: 10px;
+    padding: 8px;
+    align-self: center;
+    background: var(--today-info-color) !important;
+    color: var(--color-white) !important;
+    border: var(--color-white) 1px solid;
+    border-radius: 5px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-family);
+    transition: all 0.3s ease-in;
+}
+.logout:hover{
+    background: rgb(255, 255, 255) !important;
+    color: #000000 !important;
+    border: rgb(0, 0, 0) 1px solid !important;
+    cursor: pointer !important;
+}
+.home-button{
+    font-size: 30px;
+color:var(--today-info-color);
+margin-right: 10px;
+transition: all 0.5s ease-in;
+}
+.home-button:hover{
+    transform: scale(1.05);
+    cursor: pointer;
+}
+.user-logout{
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    
+}
+
+.user-profile{
+    color: var(--color-white);
+    border: var(--color-white) 1px solid;
+    padding: 5px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: all 0.5s ease-in-out;
+    
+}
+.user-profile:hover{
+    cursor: pointer;
+    box-shadow: var(--color-black) 1px 1px 5px;
+
+    transform: scale(1.05);
+}
 .container , .profile-container{
+    margin-top: 10px;
     background: white;
     width: 90%;
     max-width: 900px;
     height: auto;
     min-height: 500px;
     border-radius: 10px;
-    box-shadow: #000 1px 1px 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     display: flex;
     overflow: hidden;
     flex-wrap: wrap;
@@ -352,25 +438,8 @@ button:disabled , button:disabled:hover{
 
 
 }
-.logout{
-    position: absolute;
-    right: 20px;
-    padding: 8px;
-    align-self: center;
-    background: #000;
-    color: white;
-    border: white 1px solid;
-    border-radius: 5px;
-    
-    font-family: var(--font-family);
-    transition: all 0.3s ease-in;
-}
-.logout:hover{
-    background: white;
-    color: #000;
-    border: rgb(0, 0, 0) 1px solid;
-    cursor: pointer;
-}
+
+
 @media (max-width: 600px) {
     .main-profile {
         padding: 50px 20px 20px;

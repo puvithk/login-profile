@@ -76,6 +76,9 @@ const taskHeaderProgressDay = document.getElementById('task-progress-today')
 const taskHeaderProgressWeek = document.getElementById('task-progress-week')
 const taskCards = document.querySelectorAll('.todo-card')
 const editBtn = document.getElementById('edit-button')
+const userImg = document.getElementById('user-image')
+
+
 let editable = true;
 let today = new Date()
 
@@ -192,18 +195,32 @@ nextButton.addEventListener('click', () => {
     UpdateCurrentWeek(today)
 })
 
-
-
+userImg.addEventListener('click' ,()=> {
+    globalThis.location.href = '/html/home.html'
+})
+const logout  = ()=>{
+    
+    localStorage.removeItem("currectUser")
+    globalThis.location.href = '/html/index.html'
+}
 
 const openTaskDB = () => {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("TaskDB", 1);
+        const request = indexedDB.open("TaskDB", 3); 
 
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
 
+            let store;
             if (!db.objectStoreNames.contains("tasks")) {
-                db.createObjectStore("tasks", { keyPath: "id" });
+                store = db.createObjectStore("tasks", { keyPath: "id" });
+            } else {
+                store = e.target.transaction.objectStore("tasks");
+            }
+
+            
+            if (!store.indexNames.contains("createdBy")) {
+                store.createIndex("createdBy", "metadata.createdBy", { unique: false });
             }
         };
 
@@ -211,6 +228,49 @@ const openTaskDB = () => {
         request.onerror = (e) => reject(new Error(e));
     });
 };
+
+const openDB = () => {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open("UserDB", 1);
+
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+
+            if (!db.objectStoreNames.contains("users")) {
+                db.createObjectStore("users", { keyPath: "username" });
+            }
+        };
+
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject(new Error(e));
+    });
+};
+
+const getUser = async ()  =>{
+    const username =  JSON.parse(localStorage.getItem("currentUser"))
+    try {
+         const db = await openDB();
+
+        const tx = db.transaction("users", "readonly");
+        const store = tx.objectStore("users");
+       
+        user = await new Promise((resolve, reject) => {
+            const request = store.get(username);
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(new Error("Error fetching user"));
+        
+        
+        
+        });
+    userImg.src =  URL.createObjectURL(user.profileImage);
+    
+    }
+        catch{
+            notification("Error Reload again" , STATUS.FAIL)
+        }
+}
+
 
 function createTask({id=crypto.randomUUID(), title, description, priority, date, time, category, createdBy , started = false }) {
      return {
@@ -275,6 +335,7 @@ document.addEventListener('click' , async (e)=>{
     if(e.target.closest('.delete')){
         const taskId = e.target.closest('.todo-card').id
         console.log(taskId)
+        if(!await openAndCheck()) return 
         await deleteTaskByTaskId(taskId)
         todayTask = [];
         weekTask = [];
@@ -297,12 +358,15 @@ document.addEventListener('click' , async (e)=>{
 // Add event Listerner to open the task editing 
 document.addEventListener('click', (e) => {
     if (e.target.closest('input')) return;
+    if(e.target.closest('.delete')) return;
     const card = e.target.closest('.todo-card');
     if(card){
         openEditTaskPopUp(card.id)
     }
 
 });
+
+//Adding Task to the database 
 const addTaskDatabase =async (taskData) =>{
     try {
     const db = await openTaskDB()
@@ -346,6 +410,31 @@ const getTaskDatabase = async () => {
         return [];
     }
 };
+
+
+// Get data by username 
+const getTasksByUsername = async (username) => {
+    try {
+        const db = await openTaskDB();
+        const tx = db.transaction("tasks", "readonly");
+        const store = tx.objectStore("tasks");
+
+        const index = store.index("createdBy");
+
+        const tasks = await new Promise((resolve, reject) => {
+            const request = index.getAll(username);
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(new Error("Error fetching by username"));
+        });
+
+        return tasks;
+    } catch (err) {
+        console.error(err);
+        return [];
+    }
+};
+
 
 // Deleteing the task based on the taskId
 
@@ -437,7 +526,34 @@ async function loadTasks() {
     console.log("Tasks:", tasks);  
 }
 
-
+const openAndCheck = () =>{
+    return new Promise((resolve) => {
+        const div = document.createElement('div');
+        div.className = 'confirmation-popup';
+        div.innerHTML = `
+            <div class="popup-content">
+                <h3>Confirm Delete</h3>
+                <p>Are you sure you want to delete this task?</p>
+                <div class="popup-buttons">
+                    <button class="btn delete-confirm">Delete</button>
+                    <button class="btn cancel-confirm">Cancel</button>
+                </div>
+            </div>
+        `;
+        
+        main.appendChild(div);
+        
+        div.querySelector('.delete-confirm').addEventListener('click', () => {
+            div.remove();
+            resolve(true);
+        });
+        
+        div.querySelector('.cancel-confirm').addEventListener('click', () => {
+            div.remove();
+            resolve(false);
+        });
+    });
+};
 
 
 const getAllTaskAndDivide = async()=>{
@@ -445,7 +561,13 @@ const getAllTaskAndDivide = async()=>{
     todayTask = [];
     weekTask = [];
     monthTask = [];
-    const allTask = await getTaskDatabase();
+    const username = localStorage.getItem('currentUser') || null
+    if(!username){
+        notification("Login and continue" , STATUS.FAIL)
+        globalThis.location.href = '/html/index.html'
+    }
+    const allTask = await getTasksByUsername(username);
+    console.log(allTask)
     const localDate = today.getFullYear() + '-' + 
                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
                   String(today.getDate()).padStart(2, '0');
@@ -876,6 +998,7 @@ const UpdateProgress = ()=>{
 
 const refreshAll= async () =>{
     await getAllTaskAndDivide();
+    getUser()
     UpdateTodaysTodo();
     UpdateWeekTodo();
     UpdateMonthTodo();

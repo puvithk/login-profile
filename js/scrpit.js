@@ -297,9 +297,9 @@ const login = async (event) =>
             return false
         }
         notification("Login success : Redirecting" , STATUS.SUCCESS)
-        localStorage.setItem("currectUser" , JSON.stringify(user.username))
+        localStorage.setItem("currentUser" , JSON.stringify(user.username))
         setTimeout(() => {
-             globalThis.location.href = '/html/home.html';
+            globalThis.location.href = '/html/todo-list.html';
     }, 5000);
     }catch{
         notification("Error" , STATUS.FAIL)

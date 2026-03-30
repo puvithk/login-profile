@@ -10,6 +10,16 @@ const createUser = ({username = "", password = "",email = "",name = "",profileIm
     };
 };
 const main = document.querySelector('main')
+const userImg = document.getElementById('user-image')
+const userHome = document.getElementById('user-logout')
+const i = document.createElement('i')
+i.classList.add("fa-solid" , "fa-house" ,'home-button')
+
+userHome.append(i)
+i.addEventListener('click' ,  ()=>{
+    globalThis.location.href = '/html/todo-list.html'
+})
+
 let userDetails ;
 const STATUS = {
     SUCCESS: "success",
@@ -49,7 +59,7 @@ const openDB = () => {
 };
 const updateUserDeatils = async ()=>{
     // Get user details from the local storage 
-    const username =  JSON.parse(localStorage.getItem("currectUser"))
+    const username =  JSON.parse(localStorage.getItem("currentUser"))
     const profileImage = document.getElementById("profile-image")
     let user ;
      try {
@@ -81,6 +91,7 @@ const updateUserDeatils = async ()=>{
     // Update the Input values 
     const allElements = document.querySelectorAll('.user-inputs input')
     profileImage.src =  URL.createObjectURL(user.profileImage);
+    userImg.src = URL.createObjectURL(user.profileImage)
     console.log(user['profileImage'])
     allElements.forEach((element)=>{
         if(user[element.id]){
@@ -185,7 +196,7 @@ try {
 
 const logout  = ()=>{
     
-    localStorage.removeItem("currectUser")
+    localStorage.removeItem("currentUser")
     globalThis.location.href = '/html/index.html'
 }
 
@@ -280,7 +291,7 @@ const openUpdatePopUp = () => {
 
       
         document.getElementById("profile-image").src = URL.createObjectURL(selectedFile);
-
+        userImg.src = URL.createObjectURL(selectedFile);
         overlay.remove();
         notification("Profile Photo Updated Successfully" , STATUS.SUCCESS)
     });

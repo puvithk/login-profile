@@ -4,15 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <title>Home</title>
 </head>
 <body>
     <main  >
-
+          <nav>
+            <div><img src="/assests/imgs/NexTask Logo.svg" alt="Logo" class="logo"></div>
+            <div class="user-logout" id="user-logout">
+                <div class="user-profile"><img class="user-image" id="user-image" src="/assests/imgs/blank profile.webp" alt=""></div>
+                <button id="logout" class="logout" onclick="logout()" >Logout</button>
+            </div>
+        </nav>
         <section class="profile-container" id="profile-container">
 
 
-            <button id="logout" class="logout " onclick="logout()" >Logout</button>
+           
             <h2>Profile Details</h2>
             <div class="main-profile">
                 <div class="image-container">

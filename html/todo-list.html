@@ -78,9 +78,9 @@
 
 
         <nav>
-            <div>ICON</div>
+            <div><img src="/assests/imgs/NexTask Logo.svg" alt="Logo" class="logo"></div>
             <div class="user-logout">
-                <div class="user-profile"><i class="fa-solid fa-user "></i></div>
+                <div class="user-profile"><img class="user-image" id="user-image" src="/assests/imgs/blank profile.webp" alt=""></div>
                 <button id="logout" class="logout " onclick="logout()" >Logout</button>
             </div>
         </nav>
@@ -98,7 +98,10 @@
                 </div>
                 <div class="graph">
                     <h3>This Week’s Progress</h3>
-                    <div class="donut" id="week-progress"><p class="percentage-donut" id="week-precentage"></p></div>
+                    <div class="donut" id="week-progress">
+                       
+                        <p class="percentage-donut" id="week-precentage"></p>
+                    </div>
                     <div class="text-donut">
                         <div class="completed" ><p id="week-completed"></p><p>Completed</p></div>
                         <div class="pending" ><p id="week-pending"></p><p>Pending</p></div>
