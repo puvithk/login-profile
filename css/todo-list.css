@@ -14,8 +14,7 @@
 
     --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.08);
     --shadow-strong: 0 4px 10px rgba(0,0,0,0.2);
-    --gradient-dark: linear-gradient(135deg, #111, #333);
-    --gradient-current-day: linear-gradient(135deg, #000, #444);
+  
     --color-calendar-hover: #f3f4f6;
     --color-calendar-bg: #f9fafb;
     --color-btn-bg: #000;
@@ -37,6 +36,10 @@
 
     --color-todo-purple: purple;
     --color-todo-purple-bg: rgba(128, 0, 128, 0.588);
+    --selected-info-color :linear-gradient(135deg, #00000070, #656565 );
+    --today-info-color : linear-gradient(135deg, #000, #444);
+
+
 }
 body{
     margin: 0;
@@ -93,7 +96,7 @@ input[type="checkbox"] {
     margin-right: 10px;
     padding: 8px;
     align-self: center;
-    background: #000;
+    background: var(--today-info-color);
     color: white;
     border: white 1px solid;
     border-radius: 5px;
@@ -197,18 +200,65 @@ input[type="checkbox"] {
 
 
 .day .current {
-    background: linear-gradient(135deg, #000, #444);
+    background:var(--today-info-color);
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+.day .current:hover{
+    background: linear-gradient(135deg, #424141, #444) ;
     color: white;
     font-weight: bold;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
-
-.day .selected {
-    background: #2563eb;
+.selected {
+    background: var(--selected-info-color);
     color: white;
 }
+.selected:hover{
+    
+    color: rgb(10, 9, 9);
 
+}
+
+
+.calender-info{
+    width: 100px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.calender-info-row{
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    gap: 9px;
+}
+.today-info{
+    background-image: var(--today-info-color);
+    width: 30px;
+    height: 20px;
+      padding: 8px 0;
+    border-radius: 10px;
+   
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.selected-info{
+     background-image: var(--selected-info-color);
+    width: 30px;
+    height: 20px;
+      padding: 8px 0;
+    border-radius: 10px;
+   
+    transition: all 0.2s ease;
+    text-align: center;
+}
+.calender-info-row p {
+    font-size: 10px;
+}
 .graphs{
     display: flex;
     padding: 10px;
@@ -272,6 +322,9 @@ input[type="checkbox"] {
 .percentage-donut{
     position: absolute;
     font-size: xx-large;
+}
+.percentage-donut-text{
+    font-size: large;
 }
 .completed , .pending{
     height: 20px;

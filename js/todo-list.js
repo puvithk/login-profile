@@ -24,11 +24,15 @@ const renderCalender = (date)=>{
         const div = document.createElement('div')
         div.addEventListener('click' ,()=>{
             changeDateUpdate(i)
+           
         })
         div.textContent =  i 
         if (i === today.getDate() &&date.getMonth() === today.getMonth() &&date.getFullYear() === today.getFullYear())  {
         div.classList.add('current')
     }
+        if(i==date.getDate() ){
+        div.className =  'selected'
+        }
         days.append(div)
     }
    const nextDays = 42 - (startDay + endDay);
@@ -176,10 +180,16 @@ const nextButton = document.getElementById('next')
 previousButton.addEventListener('click', () => {
     today = new Date(today.getFullYear(), today.getMonth() - 1, 1)
     renderCalender(today)
+    UpdateCurrectMonth(today)
+    UpdateCurrentDay(today)
+    UpdateCurrentWeek(today)
 })
 nextButton.addEventListener('click', () => {
     today = new Date(today.getFullYear(), today.getMonth() + 1, 1)
     renderCalender(today)
+    UpdateCurrectMonth(today)
+    UpdateCurrentDay(today)
+    UpdateCurrentWeek(today)
 })
 
 
@@ -439,7 +449,7 @@ const getAllTaskAndDivide = async()=>{
     const localDate = today.getFullYear() + '-' + 
                   String(today.getMonth() + 1).padStart(2, '0') + '-' + 
                   String(today.getDate()).padStart(2, '0');
-    const filteredTask = allTask.filter((element)=>{
+    let  filteredTask = allTask.filter((element)=>{
         const taskDate = new Date(element.schedule.date);
         if(element.schedule.type === CATAGORY.TODAY){
             return taskDate.toDateString() === today.toDateString();
@@ -451,6 +461,9 @@ const getAllTaskAndDivide = async()=>{
             return taskDate.getFullYear() === today.getFullYear() && taskDate.getMonth() === today.getMonth()
         }
         return false
+    })
+    filteredTask.sort((a,b)=>{
+        return a.status.completed - b.status.completed || new Date(a.schedule.date) - new Date(b.schedule.date)
     })
     filteredTask.forEach((element) =>{
         if(element.schedule.type === CATAGORY.TODAY){
@@ -557,7 +570,7 @@ const UpdateTodaysTodo = () => {
         p.innerText = 'No task Found'
         todayTaskContainer.append(p)
     }
-    todayTaskContainer.append(addTaskButton())
+    // todayTaskContainer.append(addTaskButton())
 };
 
 
@@ -580,7 +593,7 @@ const UpdateWeekTodo = () => {
         p.innerText = 'No task Found'
         weekTaskContainer.append(p)
     }
-    weekTaskContainer.append(addTaskButton())
+    // weekTaskContainer.append(addTaskButton())
 };
 
 const UpdateMonthTodo = () => {
@@ -603,7 +616,7 @@ const UpdateMonthTodo = () => {
         
         monthTaskContainer.append(p)
     }
-    monthTaskContainer.append(addTaskButton())
+    // monthTaskContainer.append(addTaskButton())
 };
 
 
@@ -625,6 +638,11 @@ const refreshTaskEdit = async (taskId)=>{
     const cards =  document.getElementById(taskId)
     formData.forEach((element)=>{
         element.disabled = true
+    })
+    console.log(cat)
+    cat.forEach((id)=>{
+        const element = document.getElementById(`${id}-catogory`)
+        element.classList.remove('active')
     })
     const catElement = document.getElementById(`${task.schedule.type}-catogory`)
     catElement.classList.add('active')
@@ -655,6 +673,13 @@ const openEditTaskPopUp = async(taskId)=>{
     document.body.classList.add('no-scroll');
     
 }
+const addEditButton = ()=>{
+           const i = document.createElement('i')
+        i.classList.add('fa-solid' , 'fa-pen');
+        editBtn.innerText = ''
+        editBtn.append(i)
+        editBtn.append('Edit')
+}
 editBtn.addEventListener('click' ,async ()=>{
     if(editable){
         formData.forEach((element)=>{
@@ -668,11 +693,7 @@ editBtn.addEventListener('click' ,async ()=>{
     
     })
     }else {
-        const i = document.createElement('i')
-        i.classList.add('fa-solid' , 'fa-pen');
-        editBtn.innerText = ''
-        editBtn.append(i)
-        editBtn.append('Edit')
+        addEditButton()
         const taskid = JSON.parse(localStorage.getItem('taskId' ))
         await refreshTaskEdit(taskid)
         editable = true
@@ -685,6 +706,7 @@ closeButton.addEventListener("click" ,  ()=>{
     taskPopUpElement.style.display = 'none'
     document.body.classList.remove('no-scroll');
     refreshAll()
+    addEditButton()
 })
 const isFormValid = () => {
     for (let element of formData) {
@@ -715,18 +737,18 @@ taskCreationBtn.addEventListener('click', async ()=>{
         formData.forEach((element)=>{
         element.disabled = false})
         closeButton.click()
-    editBtn.disabled = false
-    taskTitle.value =  ''
-    taskDescription.value =''
-    taskPriority.value = 'HIGH'
-    taskDueDate.value =  ''
-    taskTime.value =''
-    cat.forEach((elementId) => {
-        const element = document.getElementById(`${elementId}-catogory`)
-        element.classList.remove('disable')
-            
-    
-    })
+        editBtn.disabled = false
+        taskTitle.value =  ''
+        taskDescription.value =''
+        taskPriority.value = 'HIGH'
+        taskDueDate.value =  ''
+        taskTime.value =''
+        cat.forEach((elementId) => {
+            const element = document.getElementById(`${elementId}-catogory`)
+            element.classList.remove('disable')
+        })
+    localStorage.removeItem('taskId')
+    addEditButton()
         return
     }
     // get the category 
@@ -748,7 +770,7 @@ taskCreationBtn.addEventListener('click', async ()=>{
     taskPriority.value = 'HIGH'
     taskDueDate.value =  ''
     taskTime.value =''
-    
+    editable = true
 
     // update in the database 
 })
@@ -773,7 +795,7 @@ const icons = {
     week: 'fa-calendar-week',
     month: 'fa-calendar'
 };
-
+const refeshCatogory = () =>{
 cat.forEach((elementId) => {
     const element = document.getElementById(`${elementId}-catogory`);
 
@@ -797,33 +819,55 @@ cat.forEach((elementId) => {
         }
     });
 });
+}
 
-
-
+refeshCatogory()
 
 const conicGradient = (startG , endG , startR , endR)=>{
     return `conic-gradient(#22c55e 0% ${endG}%, #ef4444 ${endG}% 100%)`
 }
 
 const UpdateProgress = ()=>{
-    
+    // FInding the precentage of all the category
     const precentages = findAllPercentage()
     console.log(precentages)
+    //Update the background to the required progress
     todaysProgress.style.background =  conicGradient(0 ,precentages.dayPercentage , precentages.dayPercentage , 100 )
     
     weeksProgress.style.background =  conicGradient(0 , precentages.weekPercentage , precentages.weekPercentage , 100)
     monthProgress.style.background  = conicGradient(0, precentages.monthPercentage , precentages.monthPercentage , 100)
-    todayPercentage.innerHTML =  precentages.dayPercentage + '&percnt;';
+    
     todayCompleted.innerText = precentages.dayCount 
     todayPending.innerText = precentages.dayRemaining
-    weeksProgress.style.background =  conicGradient(0 , precentages.weekPercentage , precentages.weekPercentage , 100)
-    monthProgress.style.background  = conicGradient(0, precentages.monthPercentage , precentages.monthPercentage , 100)
-    weekPercentage.innerHTML = precentages.weekPercentage + '&percnt;';
+    
     weekCompleted.innerText = precentages.weekCount
     weekPending.innerText = precentages.WeekRemaining
-    monthPercentage.innerHTML = precentages.monthPercentage + '&percnt;';
+    
     monthCompleted.innerText = precentages.monthCount
     monthPending.innerText = precentages.monthRemaining
+    // Check weather at least one task is present 
+    if(precentages.dayPercentage === 0 && precentages.dayCount==0 && precentages.dayRemaining==0){
+        todayPercentage.innerHTML =  '<p>NO TASK</p>'
+        todayPercentage.classList.add('percentage-donut-text')
+    }else {
+        todayPercentage.classList.remove('percentage-donut-text')
+        todayPercentage.innerHTML =  precentages.dayPercentage + '&percnt;';
+    }
+    
+    if(precentages.weekPercentage === 0 && precentages.weekCount==0 && precentages.WeekRemaining==0){
+        weekPercentage.innerHTML =  '<p>NO TASK</p>'
+        weekPercentage.classList.add('percentage-donut-text')
+    }else {
+        weekPercentage.classList.remove('percentage-donut-text')
+         weekPercentage.innerHTML = precentages.weekPercentage + '&percnt;'
+    }
+    if(precentages.monthPercentage === 0 && precentages.monthCount==0 && precentages.monthRemaining==0){
+        monthPercentage.innerHTML =  '<p>NO TASK</p>'
+        monthPercentage.classList.add('percentage-donut-text')
+    }else{ 
+        monthPercentage.classList.remove('percentage-donut-text')
+    monthPercentage.innerHTML = precentages.monthPercentage + '&percnt;';
+}
     taskHeaderProgressDay.style.width = `${precentages.dayPercentage}%`
     taskHeaderProgressMonth.style.width = `${precentages.monthPercentage}%`
     taskHeaderProgressWeek.style.width = `${precentages.weekPercentage}%`
@@ -835,9 +879,10 @@ const refreshAll= async () =>{
     UpdateTodaysTodo();
     UpdateWeekTodo();
     UpdateMonthTodo();
+    UpdateCurrentWeek(today)
+UpdateCurrectMonth(today)
+UpdateCurrentDay(today)
+
     UpdateProgress()
 }
 refreshAll()
-UpdateCurrentWeek(today)
-UpdateCurrectMonth(today)
-UpdateCurrentDay(today)
