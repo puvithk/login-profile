@@ -214,7 +214,7 @@ input[type="checkbox"] {
     
     background: radial-gradient(
         circle at center,
-        rgba(20, 162, 72, 0.25) 0%,
+        rgba(20, 162, 72, 0.556) 0%,
         transparent 70%
     );
 }
@@ -222,15 +222,15 @@ input[type="checkbox"] {
 .day-2 {
    
     background:
-        radial-gradient(circle at 30% 30%, rgba(20,162,72,0.25), transparent 60%),
-        radial-gradient(circle at 70% 70%, rgba(37,99,235,0.25), transparent 60%);
+        radial-gradient(circle at 30% 30%, rgba(20, 162, 72, 0.578), transparent 60%),
+        radial-gradient(circle at 70% 70%, rgba(37, 100, 235, 0.533), transparent 60%);
 }
 .day-3 {
    
     background:
-        radial-gradient(circle at 30% 30%, rgba(20,162,72,0.25), transparent 60%),
-        radial-gradient(circle at 70% 30%, rgba(37,99,235,0.25), transparent 60%),
-        radial-gradient(circle at 50% 70%, rgba(128,0,128,0.25), transparent 60%);
+        radial-gradient(circle at 30% 30%, rgba(20,162,72,0.5), transparent 60%),
+        radial-gradient(circle at 70% 30%, rgba(37,99,235,0.5), transparent 60%),
+        radial-gradient(circle at 50% 70%, rgba(128,0,128,0.5), transparent 60%);
 }
 .day-1, .day-2, .day-3 {
     box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
@@ -296,6 +296,7 @@ input[type="checkbox"] {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    margin: 10px;
 }
 .calender-info-row{
     display: flex;
@@ -607,6 +608,7 @@ input[type="checkbox"] {
 }
 .todo-info-div p{
     margin: 0;
+    font-size: 0.9rem;
     font-family: var(--font-family);
     font-weight: 700;
 }
@@ -727,6 +729,10 @@ input:focus{
     width: 90%;
     padding: 10px;
 }
+.create-task-form span {
+      color: var(--color-donut-red);
+    font-size: 0.8rem;
+}
 .time-filter{
     width: 100%;
     align-self: center;
@@ -791,6 +797,7 @@ form{
 }
 .task-inputs span{
     color: var(--color-donut-red);
+    font-size: 0.8rem;
 }
 textarea{
     width: 90%;
@@ -890,10 +897,10 @@ button:disabled {
     height: 80px;
     background: var(--color-white);
     position: absolute;
-    top: 10px;
+    top: 80px;
     right: 10px;
     padding: 5px;
-    
+    box-shadow: #00000066 1px 1px 5px;
 
     animation: notification-movement 0.5s linear 0.2ms 1;
     transition: all 0.2s ease-in;
@@ -921,7 +928,27 @@ button:disabled {
     background: red;
 }
 
+.calender-info-row-total{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 
+}
+.calender-info-row-total div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 5px;
+    color: var(--color-border-light);
+border-radius: 15px;
+background: var(--today-info-color);
+}
+.calender-info-row-total p {
+    font-size: 0.8rem;
+}
 @keyframes progress-animation {
     0%{
         width: 0;
@@ -1016,6 +1043,8 @@ button:disabled {
     .calender-info{
         flex-direction: row;
         margin: 10px;
+        width: 100%;
+        gap: 25px;
     }
 }
 @media  screen and (max-width:900px) {
@@ -1045,4 +1074,39 @@ button:disabled {
     margin: 10px;
    }
    
+}
+
+
+
+
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: #ffffff; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #ddd;
+    border-image: linear-gradient(90deg, var(--color-todo-blue) ,var(--color-todo-green) , var(--color-todo-purple)) 1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+
+
+.hidden {
+    display: none !important;
 }

@@ -12,7 +12,8 @@
     <title>Todo | NxTask</title>
 </head>
 <body>
-    <main>
+   
+    <main> 
         <div class="create-task" id="create-task">
             <div class="overlay"></div>
             <div class="create-popup">
@@ -30,8 +31,8 @@
                     </div>
                     <form>
                         <div class="task-inputs">
-                            <label for="task-title">Title <span>*</span></label>
-                            <input type="text" placeholder="Enter the title of the Task " id="title" name="title">
+                            <label for="task-title">Title <span>*(Only 50 character)</span></label>
+                            <input type="text" placeholder="Enter the title of the Task " id="title" name="title" maxlength="50">
                         </div>
                          <div class="task-inputs">
                             <label for="task-description">Description <span>*</span></label>
@@ -57,8 +58,10 @@
                                 <input type="time" id="time" name="time">
                                 
                             </div>
+                            
                         </div>
                     </form>
+                    <span>* Please fill in all required fields.</span>
                     <div class="create-buttons">
                         <div>
                             <button class="reset-button btn btn-negative" id="reset-button"><i class="fa-solid fa-arrow-rotate-left"></i>Reset</button>
@@ -87,6 +90,9 @@
                 <button id="logout" class="logout " onclick="logout()" >Logout</button>
             </div>
         </nav>
+        <div id="loader">
+    <div class="spinner"></div>
+</div>
         <div class="info-section">
 
             <div class="graphs">
@@ -127,6 +133,12 @@
 
         
             <div class="calender-info">
+                <div class="calender-info-row-total">
+                    <div class="total-task">
+                        <h3 id="total-task">50</h3>
+                    </div>
+                    <p>Total Task</p>
+                </div>
                 <div class="calender-info-row">
                     <div class="today-info"></div><p>Today</p>
                 </div>

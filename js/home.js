@@ -104,7 +104,7 @@ const updateUserDeatils = async ()=>{
     })
 
 }
-updateUserDeatils()
+
 const onClickEditValues = (element) => {
     // The Id of button are in elementName-operation example password-edit
     const editButton = document.getElementById(`${element}-edit`)
@@ -435,3 +435,13 @@ const imgEditButton = document.getElementById('edit-button-profile')
 imgEditButton.addEventListener('click' , ()=>{
     openUpdatePopUp()
 })
+
+window.addEventListener("load", async () => {
+    try {
+        await updateUserDeatils();
+    } catch (error) {
+        console.error("Error in refreshAll:", error);
+    } finally {
+        document.getElementById("loader").classList.add("hidden");
+    }
+});

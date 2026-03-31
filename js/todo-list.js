@@ -35,6 +35,7 @@ const previousButton = document.getElementById('prev')
 const nextButton = document.getElementById('next')
 const taskPopUpElement  =  document.getElementById('create-task')
 const closeButton = document.getElementById('close-button')
+const totalTask = document.getElementById('total-task')
 const cat = ['today' , 'week' , 'month']
 const rightIcon = `<i class="fa-regular fa-circle-check"></i>`
 const icons = {today: 'fa-calendar-day',week: 'fa-calendar-week',month: 'fa-calendar'};
@@ -76,7 +77,10 @@ const changeDateUpdate  = async (date) =>{
 }
 
 
-
+const UpdateTotalTask = async() =>{
+    const tasks =await getTaskDatabase()
+    totalTask.innerText = tasks.length;
+}
 
 //Notification function
 const notification = (message, status) => {
@@ -94,7 +98,6 @@ const notification = (message, status) => {
         div.remove();
     }, 5000);
 };
-
 
 
 
@@ -126,15 +129,15 @@ const currectMonthCard = document.getElementById('current-month')
 const currentWeekCard = document.getElementById('current-week')
 // Get the currect day 
 const currentDayCard = document.getElementById('current-day')
-const UpdateCurrentDay = (today)=>{
+const UpdateCurrentDay = async (today)=>{
     currentDayCard.innerText = `${today.getDate()}` + ` ${months[today.getMonth()]}` + ` ${today.getFullYear()}`
 }
 
-const UpdateCurrectMonth = (today)=>{
+const UpdateCurrectMonth = async (today)=>{
     currectMonthCard.innerText =   months[today.getMonth()] + " " + today.getFullYear()
 }
 
-const UpdateCurrentWeek = (today) =>{
+const UpdateCurrentWeek = async (today) =>{
     let weekDeatils = getFullweekStartAndEnd(today)
     // Change the current Week
     currentWeekCard.innerText = weekDeatils.startDate.getDate() + ` ${months[weekDeatils.startDate.getMonth()].substring(0,3)} - ` + weekDeatils.endDate.getDate() + ` ${months[weekDeatils.endDate.getMonth()].substring(0,3)}  `
@@ -145,18 +148,13 @@ const UpdateCurrentWeek = (today) =>{
 // Previous button of the calendar
 previousButton.addEventListener('click', () => {
     today = new Date(today.getFullYear(), today.getMonth() - 1, 1)
-    renderCalender(today)
-    UpdateCurrectMonth(today)
-    UpdateCurrentDay(today)
-    UpdateCurrentWeek(today)
+    refreshAll()
 })
 //Netx button of the calender 
 nextButton.addEventListener('click', () => {
     today = new Date(today.getFullYear(), today.getMonth() + 1, 1)
-    renderCalender(today)
-    UpdateCurrectMonth(today)
-    UpdateCurrentDay(today)
-    UpdateCurrentWeek(today)
+    
+   refreshAll()
 })
 
 // User profile in navbar 
@@ -218,7 +216,7 @@ const getUser = async ()  =>{
 
 
 // Create task object 
-function createTask({id=crypto.randomUUID(), title, description, priority, date, time, category, createdBy , started = false }) {
+function createTask({id=crypto.randomUUID(), title, description, priority, date, time, category, createdBy , completed=false , updatedAt=null , started = false }) {
      return {
         id: id,
 
@@ -239,12 +237,12 @@ function createTask({id=crypto.randomUUID(), title, description, priority, date,
 
         status: {
             started :  started,
-            completed: false,
+            completed: completed,
             completedAt: null
         },
         metadata: {
             createdAt: new Date(),
-            updatedAt: null ,
+            updatedAt: updatedAt ,
             createdBy : createdBy
         }
     };
@@ -578,7 +576,7 @@ const getAllTaskAndDivide = async()=>{
         return false
     })
     filteredTask.sort((a,b)=>{
-        return a.status.completed - b.status.completed || new Date(a.schedule.date) - new Date(b.schedule.date)
+        return a.status.completed - b.status.completed || new Date(a.schedule.date + " " + a.schedule.time) - new Date(b.schedule.date + " " + b.schedule.time)
     })
     // push the element into the each respective array 
     filteredTask.forEach((element) =>{
@@ -674,7 +672,7 @@ const openAddTaskPopUp = (category = 'today')=>{
 }
 
 // Update the list  of days 
-const UpdateTodaysTodo = () => {
+const UpdateTodaysTodo =async () => {
     
 
     todayTaskContainer.innerHTML = '';
@@ -699,7 +697,7 @@ const UpdateTodaysTodo = () => {
 };
 
 // Update the list  of week
-const UpdateWeekTodo = () => {
+const UpdateWeekTodo = async () => {
    
     weekTaskContainer.innerHTML = '';
     weekTask.forEach((element) => {
@@ -707,7 +705,7 @@ const UpdateWeekTodo = () => {
             todoCard({
                 id: element.id,
                 title: element.content.title,
-                time: element.schedule.time,
+                time: `${element.schedule.date}/${element.schedule.time}`,
                 priority: element.priority.level,
                 status : element.status.completed
             })
@@ -721,7 +719,7 @@ const UpdateWeekTodo = () => {
     // weekTaskContainer.append(addTaskButton())
 };
 // Update the list  of Month
-const UpdateMonthTodo = () => {
+const UpdateMonthTodo = async () => {
     
     monthTaskContainer.innerHTML = '';
     monthTask.forEach((element) => {
@@ -729,7 +727,7 @@ const UpdateMonthTodo = () => {
             todoCard({
                 id: element.id,
                 title: element.content.title,
-                time: element.schedule.time,
+                time:  `${element.schedule.date}/${element.schedule.time}`,
                 priority: element.priority.level,
                 status : element.status.completed
             })
@@ -773,6 +771,7 @@ const refreshTaskEdit = async (taskId)=>{
     });
 
     editBtn.disabled = false
+    category =  task.schedule.type
     taskTitle.value =  task.content.title
     taskDescription.value = task.content.description
     taskPriority.value = task.priority.level
@@ -825,6 +824,8 @@ editBtn.addEventListener('click' ,async ()=>{
 // Clear all the input and update 
 const  refreshAllInputs = ()=>{
     editable = false
+    editBtn.disabled = true
+    localStorage.removeItem('taskId')
      cat.forEach((elementId) => {
         const element = document.getElementById(`${elementId}-catogory`)
         element.classList.remove('disable')
@@ -847,6 +848,7 @@ const  refreshAllInputs = ()=>{
 closeButton.addEventListener("click" ,  ()=>{
     taskPopUpElement.style.display = 'none'
     document.body.classList.remove('no-scroll');
+    editBtn.disabled = true
     refreshAllInputs()
     refreshAll()
     addEditButton()
@@ -902,20 +904,38 @@ taskCreationBtn.addEventListener('click', async ()=>{
     if(!isFormValid()) return
     const taskId = JSON.parse(localStorage.getItem('taskId'))
     if(taskId){
-      
-        const task = createTask({id:taskId, title: taskTitle.value, description: taskDescription.value.trim(), priority:taskPriority.value.trim(), date: taskDueDate.value, time: taskTime.value, category: category, createdBy: username, started: true })
+        const tasks =await getTaskById(taskId)
+        const task = createTask({
+            id:taskId,
+            title: taskTitle.value,
+            description: taskDescription.value.trim(),
+            priority:taskPriority.value.trim(), 
+            date: taskDueDate.value, time: taskTime.value, 
+            category: category, 
+            createdBy: username,
+            started: true, 
+            completed:tasks.status.completed,
+            updatedAt: new Date()
+        })
         await addTaskDatabase(task)
         notification("Task Updated " , STATUS.SUCCESS)
         refreshAllInputs()
         localStorage.removeItem('taskId')
         addEditButton()
+        closeButton.click()
         return
     }
     // get the category 
 
     // get all the values 
     // // create a task object
-    const task = createTask({ title: taskTitle.value, description: taskDescription.value.trim(), priority:taskPriority.value.trim(), date: taskDueDate.value, time: taskTime.value, category: category, createdBy: username, started: true })
+    const task = createTask({ title: taskTitle.value,
+         description: taskDescription.value.trim(), 
+         priority:taskPriority.value.trim(), 
+         date: taskDueDate.value, time: taskTime.value, 
+         category: category, 
+         createdBy: username, 
+         started: true })
   
     await addTaskDatabase(task)
     notification("Task Added " , STATUS.SUCCESS)
@@ -948,7 +968,7 @@ resetButton.addEventListener('click' , ()=>{
 
 
 // Catogeroy change the type
-const refeshCatogory = () =>{
+const refeshCatogory = async () =>{
     cat.forEach((elementId) => {
         const element = document.getElementById(`${elementId}-catogory`);
         //Add event Listener
@@ -978,7 +998,7 @@ const conicGradient = (startG , endG , startR , endR)=>{
     return `conic-gradient(#22c55e 0% ${endG}%, #ef4444 ${endG}% 100%)`
 }
 // Update the progress 
-const UpdateProgress = ()=>{
+const UpdateProgress =  async ()=>{
     // FInding the precentage of all the category
     const precentages = findAllPercentage()
 
@@ -1024,19 +1044,7 @@ const UpdateProgress = ()=>{
 }
 
 
-const refreshAll= async () =>{
-    await getAllTaskAndDivide();
-    getUser()
-    renderCalender(today)
-    refeshCatogory()
-    UpdateTodaysTodo();
-    UpdateWeekTodo();
-    UpdateMonthTodo();
-    UpdateCurrentWeek(today)
-    UpdateCurrectMonth(today)
-    UpdateCurrentDay(today)
-    UpdateProgress()
-}
+
 
 // Add global check box add eventListener 
 document.addEventListener('change', async (e) => {
@@ -1096,12 +1104,30 @@ document.addEventListener('click', (e) => {
 
 });
 
+const refreshAll = async () => {
+    await getAllTaskAndDivide();
+
+    await getUser();
+    await renderCalender(today);
+    await refeshCatogory();
+    await UpdateTodaysTodo();
+    await UpdateWeekTodo();
+    await UpdateMonthTodo();
+    await UpdateCurrentWeek(today);
+    await UpdateCurrectMonth(today);
+    await UpdateCurrentDay(today);
+    await UpdateProgress();
+    await UpdateTotalTask();
+};
 
 
 
-
-
-
-
-
-refreshAll()
+window.addEventListener("load", async () => {
+    try {
+        await refreshAll();
+    } catch (error) {
+        console.error("Error in refreshAll:", error);
+    } finally {
+        document.getElementById("loader").classList.add("hidden");
+    }
+});
