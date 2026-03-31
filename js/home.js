@@ -253,11 +253,11 @@ const openUpdatePopUp = () => {
     const closeButton = div.querySelector('.close-popup');
     const confirmButton = div.querySelector('.confirm')
     let selectedFile = null;
-    const allowedTypes = ['image/jpeg', 'image/png']
+    const allowedTypes = new Set(['image/jpeg', 'image/png'])
     fileInput.addEventListener('change', () => {
         const file = fileInput.files[0];
         if (!file) return;
-        if (!allowedTypes.includes(file.type)) {
+        if (!allowedTypes.has(file.type)) {
            notification('Only PNG and JPEG file are allowed' , STATUS.FAIL)
            fileInput.value = ''
            return

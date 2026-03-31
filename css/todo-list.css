@@ -37,7 +37,7 @@
 
 
     --selected-info-color :linear-gradient(135deg, #00000070, #656565 );
-    --today-info-color : linear-gradient(135deg, #000, #444);
+    --today-info-color : linear-gradient(135deg, #000, #242424);
 
 
 }
@@ -50,9 +50,14 @@ body{
  p{
     font-family: var(--font-family);
  }
- button{
+
+ button {
+    background: #111827;
+    color: white;
+    border-radius: 10px;
+    padding: 8px 16px;
     font-family: var(--font-family);
- }
+}
 nav{
     height: 64px;
     background-image: var(--today-info-color) ;
@@ -64,14 +69,15 @@ nav{
     position: fixed;
     top: 0px;
     z-index: 11;
-    
-
+ 
 }
 h3{
     font-size: 1rem;
 }
 main{
-     background: var(--color-bg-main);
+    background: linear-gradient(135deg, #e8e8e8,var(--color-bg-main)); 
+
+    
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -282,6 +288,7 @@ input[type="checkbox"] {
    
     background: var(--selected-info-color);
     color: var(--color-white);
+    
 }
 .selected:hover{
     
@@ -346,8 +353,9 @@ input[type="checkbox"] {
    border-radius: 50px 25px ;
    margin: 10px;
    border: var(--color-border-faded) 0.1px solid;
-   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
     transition: all 0.5s ease-in;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
 .graph:hover{
@@ -375,6 +383,8 @@ input[type="checkbox"] {
     align-items: center;
     position: relative;
     transition: all 0.5s ease-in;
+ 
+
 }
 
 
@@ -456,14 +466,18 @@ input[type="checkbox"] {
     height: 100%;
     padding: 10px;
     margin-top: 10px;
-     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.384);
 
 }
+
 .todo-header{
     display: flex;
     width: 100%;
     justify-content: space-between;
     align-items: center;
+ 
+
 }
 .todo-header div{
     display: flex;
@@ -553,13 +567,13 @@ input[type="checkbox"] {
     height: 6px;
 }
 .todo-month .task-progress-complete{
-    background-color: var(--color-todo-purple);    
+    background:linear-gradient(to right , var(--color-todo-purple) , var(--color-todo-purple-bg))   
 }
 .todo-week .task-progress-complete{
-    background-color: var(--color-todo-blue);
+    background:linear-gradient(to right , var(--color-todo-blue) , var(--color-todo-blue-bg))
 }
 .todo-today .task-progress-complete{
-    background-color: var(--color-todo-green);
+    background:linear-gradient(to right , var(--color-todo-green) , var(--color-todo-green-bg))
 }
 .todo-all-list{
     
@@ -577,10 +591,14 @@ input[type="checkbox"] {
   
     height: 64px;
     display: flex;
-   box-shadow: var(--color-border-faded) 1px 1px 5px;
-   border-radius: 10px;
+    border-radius: 20px;
+    
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    background: white;
+   margin-top: 10px;
 
    align-items: center;
+   transition: all 0.5s ease-in;
    
 
 }

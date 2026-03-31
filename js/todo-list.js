@@ -994,18 +994,30 @@ const refeshCatogory = async () =>{
 }
 
 // Progress bar 
-const conicGradient = (startG , endG , startR , endR)=>{
-    return `conic-gradient(#22c55e 0% ${endG}%, #ef4444 ${endG}% 100%)`
-}
+const conicGradientToday = (startG , endG)=> {
+    return `conic-gradient( #14a248 0%, #4ade80 ${endG}%, #e5e7eb ${endG}% 100%
+    )`;
+};
+
+const conicGradientWeek = (startG , endG)=> {
+    return `conic-gradient(
+        #2563eb 0%, #60a5fa ${endG}%, #e5e7eb ${endG}% 100%
+    )`;
+};
+
+const conicGradientMonth = (startG , endG)=> {
+    return `conic-gradient(   #800080 0%, #c084fc ${endG}%, #e5e7eb ${endG}% 100%
+    )`;
+};
 // Update the progress 
 const UpdateProgress =  async ()=>{
     // FInding the precentage of all the category
     const precentages = findAllPercentage()
 
     //Update the background to the required progress
-    todaysProgress.style.background =  conicGradient(0 ,precentages.dayPercentage , precentages.dayPercentage , 100 )
-    weeksProgress.style.background =  conicGradient(0 , precentages.weekPercentage , precentages.weekPercentage , 100)
-    monthProgress.style.background  = conicGradient(0, precentages.monthPercentage , precentages.monthPercentage , 100)
+    todaysProgress.style.background =  conicGradientToday(0 ,precentages.dayPercentage , precentages.dayPercentage , 100 )
+    weeksProgress.style.background =  conicGradientWeek(0 , precentages.weekPercentage , precentages.weekPercentage , 100)
+    monthProgress.style.background  = conicGradientMonth(0, precentages.monthPercentage , precentages.monthPercentage , 100)
     //Today Text 
     todayCompleted.innerText = precentages.dayCount 
     todayPending.innerText = precentages.dayRemaining

@@ -30,7 +30,7 @@ button{
 
 
 main{
-    background: var(--color-bg-main);
+    background: linear-gradient(135deg, #e8e8e8,var(--color-bg-main)); 
     position: relative;
     width: 100%;
     min-height: 100vh;
