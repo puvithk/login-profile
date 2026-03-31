@@ -1,5 +1,5 @@
 :root{
-    --font-family : "Space Grotesk", sans-serif;
+     --font-family: "Roboto Mono", monospace;
     --today-info-color : linear-gradient(135deg, #000, #444);
     --color-bg-main: #F8FAFC;
     --color-white: #ffffff;
@@ -82,7 +82,7 @@ nav{
     cursor: pointer !important;
 }
 .home-button{
-    font-size: 30px;
+    font-size: 20px;
 color:var(--today-info-color);
 margin-right: 10px;
 transition: all 0.5s ease-in;

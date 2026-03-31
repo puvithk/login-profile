@@ -1,5 +1,5 @@
 :root{
-    --font-family: "Segoe UI", sans-serif;
+    --font-family: "Roboto Mono", monospace;
 
     --color-bg-main: #F8FAFC;
     --color-white: #ffffff;
@@ -44,10 +44,13 @@
 body{
     margin: 0;
     padding: 0 ;
-    font-family: "Segoe UI", sans-serif;
+    font-family: var(--font-family);
     background: var(--color-bg-main) ;
 }
  p{
+    font-family: var(--font-family);
+ }
+ button{
     font-family: var(--font-family);
  }
 nav{
@@ -64,7 +67,9 @@ nav{
     
 
 }
-
+h3{
+    font-size: 1rem;
+}
 main{
      background: var(--color-bg-main);
     display: flex;
