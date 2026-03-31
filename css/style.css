@@ -40,11 +40,13 @@ nav{
     position: fixed;
     top: 0px;
     z-index: 11;
-    
+     
 
 }
 .logo{
-    width: 260px;
+    width: 150px;
+    object-fit: contain;
+    transform: rotate(-90deg);
 
 }
 .user-image{
@@ -247,6 +249,12 @@ input:focus{
     font-size: small;
     text-align: center;
 }
+.text-login{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
 .password-message {
     font-family: var(--font-family);
     font-size: 10px;
@@ -329,6 +337,7 @@ input:focus{
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.5s ease-in;
 }
 
 .image-content {
@@ -374,8 +383,9 @@ input:focus{
 .user-inputs {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: start;
     gap: 10px;
+    width: 100%;
 }
 
 
@@ -385,13 +395,19 @@ input:focus{
     color: #444;
 }
 
+.user-inputs div{
+    display: flex;
+    width: 100%;
+    align-items: center;
 
-.user-inputs input {
+}
+.user-inputs div input {
     flex: 1;
     padding: 10px;
     border: none;
     border-bottom: 1px solid #ccc;
     transition: 0.3s;
+    width: 100%;
 }
 
 
@@ -479,6 +495,10 @@ button:disabled , button:disabled:hover{
     button{
         margin-top: 5px;
         margin-bottom: 5px;
+    }
+    .image-container{
+        top: -20px;
+        left: 40px;
     }
    
 }

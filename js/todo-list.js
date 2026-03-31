@@ -1,48 +1,6 @@
 const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const username = JSON.parse(localStorage.getItem('currentUser')) || null
 
-const renderCalender = (date)=>{
-    const days = document.getElementById('day')
-    const startDay = new Date(date.getFullYear() , date.getMonth() , 1).getDay()
-    const currectYear = document.getElementById("current")
-    const today = new Date()
-    days.innerHTML = ''
-    
-    const endDay = new Date(date.getFullYear() , date.getMonth()+1 , 0).getDate()
-    let previousMonthDays =  new Date(date.getFullYear() , date.getMonth() , 0).getDate()
-    currectYear.innerText = months[date.getMonth()] + ' ' + date.getFullYear()
-    for(let i = startDay ; i>0 ; i--){
-    
-        const div = document.createElement('div')
-        
-        div.textContent = previousMonthDays - i + 1
-        div.className = 'previous'
-        days.append(div)
-    }
-
-    for(let i =1 ;i<=endDay ; i++){
-       
-        const div = document.createElement('div')
-        div.addEventListener('click' ,()=>{
-            changeDateUpdate(i)
-           
-        })
-        div.textContent =  i 
-        if (i === today.getDate() &&date.getMonth() === today.getMonth() &&date.getFullYear() === today.getFullYear())  {
-        div.classList.add('current')
-    }
-        if(i==date.getDate() ){
-        div.className =  'selected'
-        }
-        days.append(div)
-    }
-   const nextDays = 42 - (startDay + endDay);
-    for (let i = 1; i <= nextDays; i++) {
-        const div = document.createElement('div');
-        div.textContent = i;
-        div.className = 'previous'
-        days.append(div);
-    }
-}
 
 const taskTitle = document.getElementById('title')
 const taskDescription = document.getElementById('description')
@@ -100,7 +58,7 @@ let monthTask = []
 let category = 'today'
 
 
-renderCalender(today)
+
 
 
 const getFullweekStartAndEnd = (date) => {
@@ -206,16 +164,16 @@ const logout  = ()=>{
 
 const openTaskDB = () => {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.open("TaskDB", 3); 
+        const request = indexedDB.open("TaskDB", 1); 
 
         request.onupgradeneeded = (e) => {
             const db = e.target.result;
 
             let store;
-            if (!db.objectStoreNames.contains("tasks")) {
-                store = db.createObjectStore("tasks", { keyPath: "id" });
-            } else {
+            if (db.objectStoreNames.contains("tasks")) {
                 store = e.target.transaction.objectStore("tasks");
+            } else {
+                store = db.createObjectStore("tasks", { keyPath: "id" });
             }
 
             
@@ -247,14 +205,15 @@ const openDB = () => {
 };
 
 const getUser = async ()  =>{
-    const username =  JSON.parse(localStorage.getItem("currentUser"))
+
     try {
          const db = await openDB();
 
         const tx = db.transaction("users", "readonly");
         const store = tx.objectStore("users");
-       
-        user = await new Promise((resolve, reject) => {
+       console.log("Username")
+       console.log(username)
+        const user = await new Promise((resolve, reject) => {
             const request = store.get(username);
 
             request.onsuccess = () => resolve(request.result);
@@ -263,11 +222,13 @@ const getUser = async ()  =>{
         
         
         });
-    userImg.src =  URL.createObjectURL(user.profileImage);
+        console.log('user ')
+        console.log(user)
+        userImg.src =  URL.createObjectURL(user.profileImage);
     
     }
-        catch{
-            notification("Error Reload again" , STATUS.FAIL)
+        catch(e){
+            notification("Error Reload again" + e , STATUS.FAIL)
         }
 }
 
@@ -401,7 +362,7 @@ const getTaskDatabase = async () => {
             const request = store.getAll();
 
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject("Fetch Error");
+            request.onerror = () => reject(new Error("Fetch Error"));
         });
 
         return tasks;
@@ -500,7 +461,7 @@ const UpdateStatusDB = async({id , status})=>{
 
 }
 
-
+// Get the task by ID
 
 const getTaskById = async(taskId)=>{
     try {
@@ -512,7 +473,7 @@ const getTaskById = async(taskId)=>{
             const request = store.get(taskId);
 
             request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject("Fetch Error");
+            request.onerror = () => reject(new Error("Fetch Error"));
         });
 
         return tasks;
@@ -521,11 +482,97 @@ const getTaskById = async(taskId)=>{
         return [];
     }
 }
-async function loadTasks() {
-    const tasks = 
-    console.log("Tasks:", tasks);  
+
+
+
+// Get the task count  based on date - 0 - 3 
+
+const getAllTaskCalender = async(date )=>{
+    try {
+        const db = await openTaskDB()
+        const tx = db.transaction('tasks' , 'readonly')
+        const store = tx.objectStore('tasks')
+        const index = store.index("createdBy");
+
+        const tasks = await new Promise((resolve, reject) => {
+            const request = index.getAll(username);
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(new Error("Error fetching by username"));
+        });
+
+        const taskCountByDay = tasks.reduce((acc, task) => {
+                const taskDate = new Date(task.schedule.date);
+
+                    
+                        if (taskDate.getMonth() === date.getMonth() && taskDate.getFullYear() === date.getFullYear()) {
+                            const day = taskDate.getDate();
+
+                            acc[day] = (acc[day] || 0) + 1;
+                        }
+
+                        return acc;
+                    }, {});
+        return taskCountByDay;
+    }
+    catch(e){
+        console.log(e)
+        return []
+    }
 }
 
+const renderCalender = async (date)=>{
+    const allTaskDate =  await getAllTaskCalender(date)
+    console.log("filtere data")
+    console.log(allTaskDate)
+    const days = document.getElementById('day')
+    const startDay = new Date(date.getFullYear() , date.getMonth() , 1).getDay()
+    const currectYear = document.getElementById("current")
+    const today = new Date()
+    days.innerHTML = ''
+    
+    const endDay = new Date(date.getFullYear() , date.getMonth()+1 , 0).getDate()
+    let previousMonthDays =  new Date(date.getFullYear() , date.getMonth() , 0).getDate()
+    currectYear.innerText = months[date.getMonth()] + ' ' + date.getFullYear()
+    for(let i = startDay ; i>0 ; i--){
+    
+        const div = document.createElement('div')
+        
+        div.textContent = previousMonthDays - i + 1
+        div.className = 'previous'
+        days.append(div)
+    }
+
+    for(let i =1 ;i<=endDay ; i++){
+       
+        const div = document.createElement('div')
+        div.addEventListener('click' ,()=>{
+            changeDateUpdate(i)
+           
+        })
+        
+        div.textContent =  i 
+        div.className =  'text-day'
+        
+        if (i === today.getDate() &&date.getMonth() === today.getMonth() &&date.getFullYear() === today.getFullYear())  {
+        div.classList.add('current')
+    }
+        if(i==date.getDate() ){
+        div.className =  'selected'
+        }
+        if(allTaskDate[i]){
+            div.classList.add(`day-${Math.min(allTaskDate[i], 3)}`)
+        }
+        days.append(div)
+    }
+   const nextDays = 42 - (startDay + endDay);
+    for (let i = 1; i <= nextDays; i++) {
+        const div = document.createElement('div');
+        div.textContent = i;
+        div.className = 'previous'
+        days.append(div);
+    }
+}
 const openAndCheck = () =>{
     return new Promise((resolve) => {
         const div = document.createElement('div');
@@ -561,16 +608,14 @@ const getAllTaskAndDivide = async()=>{
     todayTask = [];
     weekTask = [];
     monthTask = [];
-    const username = localStorage.getItem('currentUser') || null
+   
     if(!username){
         notification("Login and continue" , STATUS.FAIL)
         globalThis.location.href = '/html/index.html'
     }
     const allTask = await getTasksByUsername(username);
     console.log(allTask)
-    const localDate = today.getFullYear() + '-' + 
-                  String(today.getMonth() + 1).padStart(2, '0') + '-' + 
-                  String(today.getDate()).padStart(2, '0');
+
     let  filteredTask = allTask.filter((element)=>{
         const taskDate = new Date(element.schedule.date);
         if(element.schedule.type === CATAGORY.TODAY){
@@ -757,7 +802,7 @@ const openAddTaskPopUp = (category = 'today')=>{
 let currentTaskId =  ''
 const refreshTaskEdit = async (taskId)=>{
     const task = await getTaskById(taskId)
-    const cards =  document.getElementById(taskId)
+    
     formData.forEach((element)=>{
         element.disabled = true
     })
@@ -823,10 +868,30 @@ editBtn.addEventListener('click' ,async ()=>{
     }
     
 )
+const  refreshAllInputs = ()=>{
+    editable = false
+     cat.forEach((elementId) => {
+        const element = document.getElementById(`${elementId}-catogory`)
+        element.classList.remove('disable')
+            
+    
+    })
+    formData.forEach((element)=>{
+        if(element.id == 'priority'){
+            element.value = 'HIGH'
+        
+        }
+        else 
+        element.value = '';
+        element.disabled = false;
+    })
+    
+}
 const closeButton = document.getElementById('close-button')
 closeButton.addEventListener("click" ,  ()=>{
     taskPopUpElement.style.display = 'none'
     document.body.classList.remove('no-scroll');
+    refreshAllInputs()
     refreshAll()
     addEditButton()
 })
@@ -837,13 +902,40 @@ const isFormValid = () => {
             return false;
         }
     }
+    const selectedDate = new Date(formData[3].value);
+    const selectedTime = formData[4].value;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+
+    if (selectedDate.getTime() < today.getTime()) {
+        notification('Date cannot be past', STATUS.FAIL);
+        return false;
+    }
+
+    if (selectedDate.toDateString() === new Date().toDateString() && selectedTime) {
+        const [hours, minutes] = selectedTime.split(':').map(Number);
+
+        const selectedDateTime = new Date(selectedDate);
+        selectedDateTime.setHours(hours, minutes, 0, 0);
+
+        const now = new Date();
+
+        console.log(selectedDateTime, now);
+
+        if (selectedDateTime < now) {
+            notification('Time cannot be in the past', STATUS.FAIL);
+            return false;
+        }
+
+}
     return true;
 };
 // Create New task 
 taskCreationBtn.addEventListener('click', async ()=>{
     // get the username form local storage 
-    const username = localStorage.getItem('currentUser') || null
-    console.log(username)
+   
     if(!username){
         notification("Login and continue" , STATUS.FAIL)
        
@@ -879,7 +971,7 @@ taskCreationBtn.addEventListener('click', async ()=>{
     // // create a task object
     const task = createTask({ title: taskTitle.value, description: taskDescription.value.trim(), priority:taskPriority.value.trim(), date: taskDueDate.value, time: taskTime.value, category: category, createdBy: username, started: true })
     console.log(taskDueDate.value)
-    const taskStatus = await addTaskDatabase(task)
+    await addTaskDatabase(task)
     notification("Task Added " , STATUS.SUCCESS)
     // refreash all inputs 
     formData.forEach((element)=>{
@@ -999,6 +1091,7 @@ const UpdateProgress = ()=>{
 const refreshAll= async () =>{
     await getAllTaskAndDivide();
     getUser()
+    renderCalender(today)
     UpdateTodaysTodo();
     UpdateWeekTodo();
     UpdateMonthTodo();

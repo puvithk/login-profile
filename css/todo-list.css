@@ -80,7 +80,10 @@ input[type="checkbox"] {
 }
 
 .logo{
-    width: 260px;
+    width: 120px;
+        object-fit: contain;
+    transform: rotate(-90deg);
+    margin-left: 25px;
 
 }
 .user-image{
@@ -143,12 +146,13 @@ input[type="checkbox"] {
     width: 90vw;
     align-items: center;
     justify-content: space-between;
+   
 
 }
 
 .calendar {
 
-    width: 280px;
+    min-width: 200px;
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid var(--color-border-light);
@@ -199,15 +203,42 @@ input[type="checkbox"] {
     grid-template-rows: repeat(5, 1fr);
     gap: 4px;
     padding: 8px;
+    position: relative;
+}
+.day-1 {
+    
+    background: radial-gradient(
+        circle at center,
+        rgba(20, 162, 72, 0.25) 0%,
+        transparent 70%
+    );
 }
 
-
+.day-2 {
+   
+    background:
+        radial-gradient(circle at 30% 30%, rgba(20,162,72,0.25), transparent 60%),
+        radial-gradient(circle at 70% 70%, rgba(37,99,235,0.25), transparent 60%);
+}
+.day-3 {
+   
+    background:
+        radial-gradient(circle at 30% 30%, rgba(20,162,72,0.25), transparent 60%),
+        radial-gradient(circle at 70% 30%, rgba(37,99,235,0.25), transparent 60%),
+        radial-gradient(circle at 50% 70%, rgba(128,0,128,0.25), transparent 60%);
+}
+.day-1, .day-2, .day-3 {
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.05);
+}
 .day div {
     padding: 8px 0;
     border-radius: 10px;
     cursor: pointer;
     transition: all 0.2s ease;
     text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 
@@ -235,6 +266,15 @@ input[type="checkbox"] {
 }
 
 .selected {
+     padding: 8px 0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+   
     background: var(--selected-info-color);
     color: var(--color-white);
 }
@@ -285,6 +325,8 @@ input[type="checkbox"] {
     display: flex;
     padding: 10px;
     gap: 20px;
+    align-items: center;
+    justify-content: center;
 
 }
 .graph {
@@ -607,14 +649,13 @@ input[type="checkbox"] {
     padding-top: 10px ;
 }
 .create-task{
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
+   position: fixed;
+    inset: 0; 
+    
     justify-content: center;
-    align-items: start;
+    align-items: center; 
     z-index: 10;
-    top: 100px;
+   display: none;
 }
 .no-scroll {
     overflow: hidden;
@@ -649,10 +690,13 @@ input:focus{
 .create-popup{
     background: var(--color-white);
     width: 50%;
+      margin-top: 64px;
     z-index: 12;
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-height: 90vh;   
+    overflow-y: auto;  
 }
 .create-popup header{
     width: 90%;
@@ -660,6 +704,7 @@ input:focus{
     align-items: center;
     justify-content: space-between;
     align-self: center;
+  
     padding-right: 10px;
     padding-left: 10px ;
     border-bottom: var(--color-border-faded) 2px solid;
@@ -684,6 +729,8 @@ input:focus{
     gap: 10px;
     border-bottom: var(--color-border-faded) 1px solid;
     padding-bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 .time-filter div{
     text-align: center;
@@ -737,6 +784,9 @@ form{
     margin-left: 0px;
     width: 90%;
 }
+.task-inputs span{
+    color: var(--color-donut-red);
+}
 textarea{
     width: 90%;
     height: 100px;
@@ -786,6 +836,8 @@ textarea{
     margin: 20px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
     
 }
 .create-buttons div{
@@ -902,7 +954,7 @@ button:disabled {
 }
 /*Hiding the create task*/
 .create-task{
-       display: none;
+       
 }
 .disable{
     cursor: not-allowed;
@@ -951,4 +1003,41 @@ button:disabled {
         top: 80px;
         scale: 1;
     }
+}
+@media  screen and (max-width : 1260px) {
+    .info-section{
+        flex-direction: column;
+    }
+    .calender-info{
+        flex-direction: row;
+        margin: 10px;
+    }
+}
+@media  screen and (max-width:900px) {
+    .graphs{
+        flex-wrap: wrap;
+    }
+   .todo-main{
+    grid-template-columns: auto;
+   }
+   .create-popup{
+    width: 90%;
+      
+        padding: 10px;
+   }
+   .task-row{
+    grid-template-columns: 1fr ;
+
+   }
+   .task-inputs select{
+    position: relative;
+
+   }
+   .create-buttons{
+    justify-content: center;
+   }
+   .create-buttons button{
+    margin: 10px;
+   }
+   
 }

@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/todo-list.css" >
-   
+   <link rel="icon"  href="/assests/imgs/NexTak.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <title>Document</title>
+    <title>Todo | NexTask</title>
 </head>
 <body>
     <main>
@@ -21,9 +21,9 @@
                     <div class="time-filter">
                         <div class="today-filter active" id="today-catogory">
                                                <i class="fa-solid fa-calendar-day">
-                                                    </i><p>TODAY</p></div>
+                                                    </i><p>DAY</p></div>
                         <div class="week-filter" id="week-catogory"><i class="fa-solid fa-calendar-week"></i><p>THIS WEEK</p></div>
-                        <div class="month-filter" id="month-catogory"><i class="fa-regular fa-calendar"></i><p>THIS MONTH</p></div>
+                        <div class="month-filter" id="month-catogory"><i class="fa-solid fa-calendar"></i><p>THIS MONTH</p></div>
                     </div>
                     <form>
                         <div class="task-inputs">
@@ -36,7 +36,7 @@
                         </div>
                         <div class="task-row">
                             <div class="task-inputs">
-                                <label for="task-priority">Priority</label>
+                                <label for="task-priority">Priority  <span>*</span></label>
                                 <select id="priority"  name="priority">
                                     <option><span class="indicator high"></span>HIGH</option>
                                     <option > <span  class="indicator medium"></span>MEDIUM</option>
@@ -45,12 +45,12 @@
                                 
                             </div>
                                 <div class="task-inputs">
-                                <label for="task-due-date">Due Date</label>
+                                <label for="task-due-date">Due Date <span>*</span></label>
                                 <input type="date" id="due-date"  name="due-date">
                                 
                             </div>
                                 <div class="task-inputs">
-                                <label for="task-time">Time</label>
+                                <label for="task-time">Time <span>*</span></label>
                                 <input type="time" id="time" name="time">
                                 
                             </div>
