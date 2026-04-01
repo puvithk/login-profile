@@ -38,6 +38,7 @@
 
     --selected-info-color :linear-gradient(135deg, #00000070, #656565 );
     --today-info-color : linear-gradient(135deg, #000, #242424);
+    --grey-progress:#e5e7eb;
 
 
 }
@@ -304,6 +305,7 @@ input[type="checkbox"] {
     flex-direction: column;
     gap: 10px;
     margin: 10px;
+
 }
 .calender-info-row{
     display: flex;
@@ -436,10 +438,23 @@ input[type="checkbox"] {
     border-radius: 50%;
     animation: twinkel 1s infinite ;
     transition: all 2s ease-in;
+    box-shadow: #919191f1 1px 1px 5px;
 
 }
+.week.completed::before{
+    background:var(--color-todo-blue);
+}
+#week-completed{
+    color: var(--color-todo-blue);
+}
+.month.completed::before {
+    background: var(--color-todo-purple);
+}
+#month-completed{
+    color: var(--color-todo-purple);
+}
 .pending::before{
-    background-color: var(--color-donut-red);
+    background-color: var(--grey-progress);
 }
 @keyframes twinkel{
     0%   
@@ -1063,6 +1078,8 @@ background: var(--today-info-color);
         margin: 10px;
         width: 100%;
         gap: 25px;
+            align-items: center;
+    justify-content: center;
     }
 }
 @media  screen and (max-width:900px) {
@@ -1128,3 +1145,4 @@ background: var(--today-info-color);
 .hidden {
     display: none !important;
 }
+

@@ -78,8 +78,14 @@ const changeDateUpdate  = async (date) =>{
 
 
 const UpdateTotalTask = async() =>{
-    const tasks =await getTaskDatabase()
-    totalTask.innerText = tasks.length;
+    const tasks =await getTasksByUsername(username)
+   
+    if(tasks.length){
+        totalTask.innerText = tasks.length;
+    }else {
+        totalTask.innerText = 0
+    }
+    
 }
 
 //Notification function
@@ -1099,7 +1105,7 @@ document.addEventListener('click' , async (e)=>{
         UpdateWeekTodo();
         UpdateMonthTodo();
         UpdateProgress()
-    
+        UpdateTotalTask()
     
     }
     });
