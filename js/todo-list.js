@@ -1021,9 +1021,9 @@ const UpdateProgress =  async ()=>{
     const precentages = findAllPercentage()
 
     //Update the background to the required progress
-    todaysProgress.style.background =  conicGradientToday(0 ,precentages.dayPercentage , precentages.dayPercentage , 100 )
-    weeksProgress.style.background =  conicGradientWeek(0 , precentages.weekPercentage , precentages.weekPercentage , 100)
-    monthProgress.style.background  = conicGradientMonth(0, precentages.monthPercentage , precentages.monthPercentage , 100)
+    todaysProgress.style.background =  conicGradientToday(precentages.dayPercentage , precentages.dayPercentage )
+    weeksProgress.style.background =  conicGradientWeek( precentages.weekPercentage , precentages.weekPercentage )
+    monthProgress.style.background  = conicGradientMonth(precentages.monthPercentage , precentages.monthPercentage )
     //Today Text 
     todayCompleted.innerText = precentages.dayCount 
     todayPending.innerText = precentages.dayRemaining
